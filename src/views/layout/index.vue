@@ -2,6 +2,9 @@
 const menuInfo = [
     {}
 ]
+const handleOpen = (key, keyPath) => {
+  
+}
 </script>
 
 <template>
