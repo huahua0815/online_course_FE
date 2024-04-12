@@ -1,14 +1,18 @@
 <template>
 <div class="course-wrap">
   <div class="course-list">
-    <div class="course-card" v-for="info in courseInfo" :key="info">
-      <div class="course-cover"></div>
-      <div class="couse-name">{{ info.name }}</div>
-      <div class="couse-teacher">{{ info.teacher }}</div>
+    <div class="course-card" v-for="info in courseInfo" :key="info" @click="handleGoDetail">
+      <div class="course-cover">
+        <el-image :src="getAssetsFile(info.cover)" style="width: 260px; height:160px" fix="cover"></el-image>
+      </div>
+    <div class="course-text-info">
+      <div class="course-name">{{ info.name }}</div>
+      <div class="course-teacher">{{ info.teacher }}</div>
       <div class="course-info">
         <div class="course-info-left">{{ `进行至第${info.timeSpan}` }}</div>
         <div class="course-info-right">{{ `${info.studentNum}人参加` }}</div>
       </div>
+    </div>
     </div>
   </div>
 </div>
@@ -16,9 +20,19 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { getAssetsFile } from '@/util/utils.js'
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+
+const handleGoDetail = () => {
+  router.push({name:'CourseDetail'})
+}
+
+
 const courseInfo = ref([
   {
-    "cover": "course1.jpg",
+    "cover": "img/编程导论.jpeg",
     "name": "计算机编程导论",
     "teacher": "张伟",
     "timeSpan": "8周",
@@ -91,16 +105,54 @@ const courseInfo = ref([
 </script>
 
 <style scoped lang="scss">
+$active-color: #409eff;
+$text-plain-color: #7e7e7e;
+.course-wrap{
+  display: flex;
+  justify-content: center;
+}
 .course-list{
+  margin-top: 24px;
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  width: 1380px;
 }
 .course-card{
   width: 260px;
-  height: 300px;
+  height: 280px;
+  cursor: pointer;
+  border-radius: 8px;
+  background-color: #fff;
+  &:hover{
+    box-shadow: 0 4px 16px 0 rgba(0,0,0,0.12);
+  }
+  .course-cover{
+    width: 260px;
+    height: 160px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    overflow: hidden;
+  }
+  .course-name{
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .course-text-info{
+    padding: 8px;
+  }
   .course-info{
     display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    &-left{
+      color: $active-color;
+      font-size: 12px;
+    }
+    &-right{
+      color: $text-plain-color;
+      font-size: 12px;
+    }
   }
 }
 </style>

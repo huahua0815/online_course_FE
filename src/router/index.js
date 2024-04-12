@@ -8,7 +8,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/home/index.vue')
+      component: () => import('@/views/layout/index.vue'),
+      children: [
+        {
+          path: '/course',
+          name: 'course',
+          component: () => import('@/views/course/index.vue'),
+          
+        },
+        {
+          path: '/course/detail',
+          name: 'CourseDetail',
+          component: () => import('@/views/course/children/detail.vue')
+        },
+      ]
     },
     {
       path: '/login',
@@ -20,11 +33,8 @@ const router = createRouter({
       name: 'register',
       component: () => import('@/views/user/register.vue')
     },
-    {
-      path: '/course',
-      name: 'course',
-      component: () => import('@/views/course/index.vue')
-    }]
+    
+  ]
 })
 
 router.beforeEach((to, from, next) => {
