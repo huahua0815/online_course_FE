@@ -14,13 +14,21 @@ const router = createRouter({
           path: '/course',
           name: 'course',
           component: () => import('@/views/course/index.vue'),
-          
+          redirect:'/course/list',
+          children:[
+            {
+              path: 'list',
+              name: 'CourseList',
+              component: () => import('@/views/course/children/list.vue')
+            },
+            {
+              path: 'detail',
+              name: 'CourseDetail',
+              component: () => import('@/views/course/children/detail.vue')
+            },
+          ]
         },
-        {
-          path: '/course/detail',
-          name: 'CourseDetail',
-          component: () => import('@/views/course/children/detail.vue')
-        },
+       
       ]
     },
     {
@@ -28,12 +36,6 @@ const router = createRouter({
       name: 'login',
       component: () => import('@/views/user/login.vue')
     },
-    {
-      path: '/register',
-      name: 'register',
-      component: () => import('@/views/user/register.vue')
-    },
-    
   ]
 })
 

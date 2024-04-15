@@ -6,7 +6,7 @@
  <div class="login-wrap-right">
   <div class="login-box">
     <div class="welcome">
-        <p> 欢迎使用<span style="color:">在线课程系统</span>🎉</p>
+        <p> 欢迎使用<span style="color:#315BF4">在线课程系统</span> 🎉</p>
     </div>
     <el-form :label-width="60">
       <el-form-item label="用户名">
@@ -22,6 +22,10 @@
       <el-radio-button label="管理员" value="admint" />
     </el-radio-group>
       </el-form-item>
+      <el-form-item>
+        <el-button type="primary" plain @click="handleLogin">登录</el-button>
+        <el-button type="primary" plain @click="handleReg">注册</el-button>
+      </el-form-item>
     </el-form>
   </div>
  </div>
@@ -31,8 +35,19 @@
 <script setup>
 import {  ref } from 'vue'
 import { getAssetsFile } from '@/util/utils.js'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const role = ref('student')
+
+const handleLogin = ()=>{
+  router.push('/')
+  console.log('click')
+}
+
+const handleReg = ()=>{
+  router.push('/')
+}
 </script>
 
 <style scoped lang="scss">
@@ -52,8 +67,8 @@ const role = ref('student')
     align-items: center;
     justify-content: center;
     .login-box{
-      width: 360px;
-      height: 480px;
+      width: 320px;
+      height: 360px;
       box-sizing: border-box;
       padding: 24px;
       border-radius: 8px;
@@ -62,8 +77,15 @@ const role = ref('student')
     }
   }
 }
-.welcome p:nth-child(1) span{
+.welcome{
+  text-align: center;
+  margin-bottom: 24px;
+  p{
+    font-size: 20px;
+  }
+  p:nth-child(1) span{
   font-size: 20px;
   font-weight: 500;
-}    
+}
+}
 </style>

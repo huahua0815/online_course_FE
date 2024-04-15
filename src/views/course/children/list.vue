@@ -1,9 +1,3 @@
-<template>
-<div class="course-wrap">
- <router-view></router-view>
-</div>
-</template>
-
 <script setup>
 import { reactive, ref } from 'vue'
 import { getAssetsFile } from '@/util/utils.js'
@@ -90,3 +84,72 @@ const courseInfo = ref([
 ])
 </script>
 
+<template>
+   <div class="course-list">
+    <div class="course-card" v-for="info in courseInfo" :key="info" @click="handleGoDetail">
+      <div class="course-cover">
+        <el-image :src="getAssetsFile(info.cover)" style="width: 260px; height:160px" fix="cover"></el-image>
+      </div>
+    <div class="course-text-info">
+      <div class="course-name">{{ info.name }}</div>
+      <div class="course-teacher">{{ info.teacher }}</div>
+      <div class="course-info">
+        <div class="course-info-left">{{ `进行至第${info.timeSpan}` }}</div>
+        <div class="course-info-right">{{ `${info.studentNum}人参加` }}</div>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+@import '@/style/common.scss';
+.course-wrap{
+  display: flex;
+  justify-content: center;
+}
+.course-list{
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 96%;
+}
+.course-card{
+  width: 260px;
+  height: 280px;
+  cursor: pointer;
+  border-radius: 8px;
+  background-color: #fff;
+  &:hover{
+    box-shadow: 0 4px 16px 0 rgba(0,0,0,0.12);
+  }
+  .course-cover{
+    width: 260px;
+    height: 160px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    overflow: hidden;
+  }
+  .course-name{
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .course-text-info{
+    padding: 8px;
+  }
+  .course-info{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    &-left{
+      color: $active-color;
+      font-size: 12px;
+    }
+    &-right{
+      color: $text-plain-color;
+      font-size: 12px;
+    }
+  }
+}
+</style>

@@ -14,7 +14,7 @@
   padding: 0;
   margin: 0;
   list-style: none;
-  color: #454545;
+  /* color: #454545; */
   font-family: Avenir;
   font-size: 14px;
   font-style: normal;
