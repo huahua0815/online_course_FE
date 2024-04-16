@@ -6,6 +6,7 @@ const title = ref("在线课程系统");
 const menuInfo = [
   { name: "首页", icon: "HomeFilled", path: "/home" },
   { name: "课程中心", icon: "Collection", path: "/course/list" },
+  { name: "课程管理", icon: "SetUp", path: "/course/manage" },
   { name: "个人中心", icon: "Grid", path: "" },
 ];
 const handleOpen = (key, keyPath) => {};
