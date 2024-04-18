@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vue-office/pdf": "^1.6.5",
     "element-plus": "^2.6.3",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "sass": "^1.74.1",
     "vue": "^3.4.21",
+    "vue-demi": "0.14.6",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

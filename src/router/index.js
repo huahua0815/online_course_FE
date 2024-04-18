@@ -7,7 +7,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'Roote',
       component: () => import('@/views/layout/index.vue'),
       children: [
         {
@@ -33,7 +33,21 @@ const router = createRouter({
             },
           ]
         },
-       
+        {
+          path: '/home',
+          name: 'Home',
+          component: () => import('@/views/home/index.vue')
+        },
+        {
+          path: '/teacher',
+          name: 'Teacher',
+          component: () => import('@/views/teacher/index.vue')
+        },
+        {
+          path: '/discuss',
+          name: 'Disucss',
+          component: () => import('@/views/discuss/index.vue')
+        },
       ]
     },
     {
@@ -47,6 +61,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   NProgress.configure({ showSpinner: false })
   NProgress.start()
+  // if(!store.getUserInfo){
+  //   next('/login')
+  // }
   next()
 })
 

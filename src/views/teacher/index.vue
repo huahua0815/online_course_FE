@@ -1,44 +1,15 @@
 <template>
- <div class="manage-wrap">
-  <div class="teacher-operation"><el-button type="primary" :icon="Plus" @click="dialogVisible = true">新增课程</el-button></div>
-  <el-table :data="courseInfo" >
-    <el-table-column prop="name" label="课程名" width="180" />
-    <el-table-column prop="teacher" label="讲师" width="180" />
-    <el-table-column prop="timeSpan" label="开课时长" width="180" />
-    <el-table-column prop="studentNum" label="学生人数" />
+<div class="teacher-wrap">
+  <div class="teacher-operation"><el-button type="primary" :icon="Plus" >新增讲师</el-button></div>
+  <el-table :data="courseInfo">
+    <el-table-column prop="teacher" label="讲师" min-width="180" />
     <el-table-column prop="" label="操作" width="360">
       <el-button type="danger" >删除</el-button>
       <el-button type="warning" >更改</el-button>
       <el-button type="info" >详情</el-button>
     </el-table-column>
   </el-table>
-  <el-dialog
-    v-model="dialogVisible"
-    title="新增课程"
-    width="600"
-  >
-   <el-form :model="formData" :label-width="80">
-   <el-form-item label="课程名" prop="name"><el-input v-model="formData.name"/></el-form-item>
-   <el-form-item label="课程简介" prop="name"><el-input type="textarea" v-model="formData.intro"/></el-form-item>
-   <el-form-item label="课程封面" prop="cover"><el-upload action="#" list-type="picture-card" :auto-upload="false">
-    <el-icon><Plus /></el-icon>
-
-    <template #file="{ file }">
-      <div>
-        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-      </div>
-    </template>
-  </el-upload></el-form-item>
-   </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handlePostMessage">
-          新增
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
+ 
  </div>
 </template>
 
@@ -47,13 +18,6 @@ import { ref,reactive } from 'vue'
 import {
  Plus
 } from '@element-plus/icons-vue'
-const dialogVisible = ref(false)
-const formData = reactive({
-  name:'',
-  intro:'',
-  cover:'',
-  file:[]
-})
 const courseInfo = ref([
   {
     cover: "img/编程导论.jpeg",
@@ -133,7 +97,7 @@ const courseInfo = ref([
   display: flex;
   justify-content: flex-end;
 }
-.manage-wrap{
+.teacher-wrap{
   width: 900px;
   border-radius: 8px;
   padding: 16px;
