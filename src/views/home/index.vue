@@ -11,6 +11,7 @@ home
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import VueOfficePdf from '@vue-office/pdf'
 const renderedHandler=()=> {
             console.log("渲染完成")
@@ -19,6 +20,10 @@ const renderedHandler=()=> {
  const errorHandler=()=> {
             console.log("渲染失败")
  }
+
+ onMounted(()=>{
+  
+ })
 </script>
 
 <style scoped>
