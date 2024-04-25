@@ -53,17 +53,19 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/user/login.vue')
+      component: () => import('@/views/login/login.vue')
     },
+    {
+      path: '/user',
+      name:'UserIndex',
+      component: () => import('@/views/user/index.vue')
+    }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   NProgress.configure({ showSpinner: false })
   NProgress.start()
-  // if(!store.getUserInfo){
-  //   next('/login')
-  // }
   next()
 })
 
