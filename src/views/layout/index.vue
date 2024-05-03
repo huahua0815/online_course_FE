@@ -18,6 +18,7 @@ const menuInfoAdmin = [
   { name: "首页", icon: "HomeFilled", path: "/home" },
   { name: "课程中心", icon: "Collection", path: "/course/list" },
   { name: "课程管理", icon: "SetUp", path: "/course/manage" },
+  { name: "用户管理", icon: "UserFilled", path: "/teacher1" },
   { name: "讲师管理", icon: "UserFilled", path: "/teacher" },
   { name: "留言管理", icon: "ChatSquare", path: "/discuss" },
   { name: "个人中心", icon: "Grid", path: "" },
