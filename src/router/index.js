@@ -1,6 +1,9 @@
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/store/user'
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +37,34 @@ const router = createRouter({
           ]
         },
         {
+          path: '/exam',
+          name: 'Exam',
+          component: () => import('@/views/exam/index.vue'),
+          redirect:'/exam/list',
+          children:[
+            {
+              path: 'list',
+              name: 'ExamList',
+              component: () => import('@/views/exam/children/list.vue')
+            },
+            {
+              path: 'create-exam',
+              name: 'CreateExam',
+              component: () => import('@/views/exam/children/create-exam.vue')
+            },
+            {
+              path: 'take-exam',
+              name: 'TakeExam',
+              component: () => import('@/views/exam/children/take-exam.vue')
+            },
+            {
+              path: 'manage',
+              name: 'ExamManage',
+              component: () => import('@/views/exam/children/manage.vue')
+            },
+          ]
+        },
+        {
           path: '/home',
           name: 'Home',
           component: () => import('@/views/home/index.vue')
@@ -53,6 +84,16 @@ const router = createRouter({
           name: 'Disucss',
           component: () => import('@/views/discuss/index.vue')
         },
+        {
+          path: '/user',
+          name:'UserIndex',
+          component: () => import('@/views/user/index.vue')
+        },
+        {
+          path: '/admin',
+          name:'AdminIndex',
+          component: () => import('@/views/admin/index.vue')
+        }
       ]
     },
     {
@@ -60,18 +101,23 @@ const router = createRouter({
       name: 'login',
       component: () => import('@/views/login/login.vue')
     },
-    {
-      path: '/user',
-      name:'UserIndex',
-      component: () => import('@/views/user/index.vue')
-    }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   NProgress.configure({ showSpinner: false })
   NProgress.start()
-  next()
+  const store = useUserStore()
+  console.log('beforeEach', store.info)
+  if(store.info.name == ''){
+    if(to.path == '/login'){
+      next()
+    }else{
+      next('/login')
+    }
+  }else{
+    next()
+  }
 })
 
 router.afterEach(() => {

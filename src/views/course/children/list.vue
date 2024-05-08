@@ -2,6 +2,7 @@
 import { reactive, ref } from "vue";
 import { getAssetsFile } from "@/util/utils.js";
 import { useRouter } from "vue-router";
+import { Edit } from "@element-plus/icons-vue";
 
 const router = useRouter();
 
@@ -81,10 +82,18 @@ const courseInfo = ref([
     studentNum: 55,
   },
 ]);
+
+const handleAddCourse = () => {
+  
+}
 </script>
 
 <template>
-  <div class="course-list">
+  <div class="course-list-wrap">
+    <div class="flex justify-start mb-4">
+      <el-button type="primary" :icon="Edit" @click="handleAddCourse">发布课程</el-button>
+    </div>
+    <div class="course-list">
     <div
       class="course-card"
       v-for="info in courseInfo"
@@ -108,6 +117,8 @@ const courseInfo = ref([
       </div>
     </div>
   </div>
+  </div>
+
 </template>
 
 <style scoped lang="scss">
@@ -117,13 +128,9 @@ const courseInfo = ref([
   justify-content: center;
 }
 .course-list {
-  margin-top: 24px;
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  width: 900px;
-  max-height: calc(100vh - 100px);
-  overflow: auto;
 }
 .course-card {
   width: 260px;

@@ -98,6 +98,6 @@ onMounted(()=>{
   padding: 16px;
   margin: 12px auto;
   background-color: #fff;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 115px);
 }
 </style>

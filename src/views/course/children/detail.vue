@@ -286,7 +286,6 @@ const handlePostMessage = ()=>{
   border-radius: 4px;
 }
 .panel-wrap {
-  width: 900px;
   max-height: calc(100vh - 500px);
   overflow: auto;
   position: relative;

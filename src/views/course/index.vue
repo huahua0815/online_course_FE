@@ -6,7 +6,6 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { getAssetsFile } from '@/util/utils.js'
 import { useRouter } from 'vue-router';
 
 const router = useRouter()

@@ -13,5 +13,8 @@ export const useUserStore = defineStore('user',{
     setUserInfo(obj){
       this.info = obj
     }
+  },
+  persist: {
+    enabled: true // true 表示开启持久化保存
   }
 })

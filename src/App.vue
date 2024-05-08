@@ -36,4 +36,9 @@
   border-radius: 5px;
   /* background-color: #d3dce6; */
 }
+.el-popper.is-light {
+    border: unset;
+    box-shadow: 0px 0px 12px rgba(2, 6, 19, 0.15);
+    color: #292929;
+  }
 </style>
