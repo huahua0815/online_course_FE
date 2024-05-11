@@ -10,16 +10,16 @@
         </div>
         <el-form :label-width="48" :model="formData">
           <el-form-item label="工号">
-            <el-input v-model="formData.name" />
+            <el-input v-model="formData.username" />
           </el-form-item>
           <el-form-item label="密码">
             <el-input v-model="formData.password" />
           </el-form-item>
           <el-form-item label="角色">
-            <el-radio-group v-model="role">
-              <el-radio-button label="学生" value="student" />
-              <el-radio-button label="教师" value="teacher" />
-              <el-radio-button label="管理员" value="admin" />
+            <el-radio-group v-model="formData.userType">
+              <el-radio-button label="学生" value="1" />
+              <el-radio-button label="教师" value="2" />
+              <el-radio-button label="管理员" value="3" />
             </el-radio-group>
           </el-form-item>
           <el-form-item>
@@ -46,7 +46,7 @@
               <el-input v-model="regFormData.password" />
             </el-form-item>
             <el-form-item label="角色">
-              <el-radio-group v-model="regFormData.usertype">
+              <el-radio-group v-model="regFormData.userType">
                 <el-radio-button label="学生" value="1" />
                 <el-radio-button label="教师" value="2" />
                 <el-radio-button label="管理员" value="3" />
@@ -54,7 +54,7 @@
             </el-form-item>
             <el-form-item>
               <div class="opreation-wrap flex  justify-center w-full"><el-button type="primary"
-                  @click="handleLogin">注册</el-button>
+                  @click="handleRegister">注册</el-button>
               </div>
             </el-form-item>
           </el-form>
@@ -69,38 +69,47 @@ import { getAssetsFile } from '@/util/utils.js'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/store/user'
+import { login,register } from '@/api/index.js'
+import _ from 'lodash'
+
 
 const isLogin = ref(true)
 const store = useUserStore()
 const router = useRouter()
 const role = ref('student')
 const formData = reactive({
-  name: '',
-  password: ''
+  username: '',
+  password: '',
+  userType:1,
 })
 
 const regFormData = reactive({
   number:'',
   password:'',
-  usertype:1,
+  userType:1,
   username:''
 })
 const m = {
-  'student': { name: '202201', password: '123456', route: '/user' },
-  'admin': { name: 'admin', password: '123456', route: '/admin' },
-  'teacher': { name: '001', password: '123456', route: '/teacher' },
+  1: { route: '/user' },
+  2: {  route: '/teacher' },
+  3: {  route: '/admin' },
 }
-const handleLogin = () => {
-  let roleName = role.value
-  const { name, password, route } = m[roleName]
-  if (formData.name == name && formData.password == password) {
-    store.setUserInfo({ name, role: roleName })
-    router.push(route)
-    ElMessage.success('登录成功！')
-  } else {
-    ElMessage.error('密码错误！')
-  }
 
+const handleLogin = async() => {
+  try{
+    const {code,data} = await login(formData)
+    if(code == 0){
+      const userInfo = _.pick(data, ['username', 'userType', 'userId'])
+      store.setUserInfo(userInfo)
+      ElMessage.success('登录成功！')
+      console.log('11',data.userId,m[data.userType].route)
+      router.push(m[data.userType].route)
+    }else{
+      ElMessage.error('登录失败！')
+    }
+  }catch(e){
+
+  }
 }
 
 const regformDataStudent = reactive({
@@ -110,6 +119,18 @@ const regformDataStudent = reactive({
 })
 const handleReg = () => {
   isLogin.value = false
+}
+
+const handleRegister = async() => {
+  try{
+    const {code} = await register(regFormData)
+    if(code == 0){
+      ElMessage.success('注册成功！')
+      isLogin.value = true  
+    }
+  }catch(e){
+
+  }
 }
 </script>
 

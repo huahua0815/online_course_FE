@@ -13,13 +13,13 @@ const isLogin = ref(false)
 const curComponnet = ref(student)
 
 watch(() => store.getUserInfo, (newObj, oldObj) => {
-  let role = newObj.role
-  if (role) {
-    switch(role){
-      case 'admin': 
+  let type = newObj.userType
+  if (type) {
+    switch(type){
+      case 3: 
         curComponnet.value = admin
         break
-      case 'student':
+      case 1:
         curComponnet.value = student
         break
       default:

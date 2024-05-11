@@ -19,6 +19,7 @@
         <el-menu-item index="3-4">我的作业</el-menu-item>
         <el-menu-item index="3-5">我的学习进度</el-menu-item>
         <el-menu-item index="3-6">个人资料</el-menu-item>
+        <el-menu-item index="/login">退出登录</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/login">后台中心</el-menu-item>
     </el-menu>

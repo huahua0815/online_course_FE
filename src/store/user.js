@@ -2,12 +2,21 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user',{
   state:()=>({
-    info:{name:'', role:'' }
+    info:{username:'', userType:'' ,userId:0}
   }),
   getters:{
     getUserInfo :(state)=>{
       return state.info
-    }
+    },
+    isStudent:(state)=>{
+      return state.info.userType == 1
+    },
+    isTeacher:(state)=>{
+      return state.info.userType == 2
+    },
+    isAdmin:(state)=>{
+      return state.info.userType == 3
+    },
   },
   actions:{
     setUserInfo(obj){

@@ -22,7 +22,7 @@
         <div class="user-info">
           <div class="user-info-item">
             <el-image style="width: 32px; height:32px" :src="getAssetsFile('img/学生头像.png')"></el-image>
-            <span class="ml-4">小明</span>
+            <span class="ml-4">{{ store.info.username }}</span>
           </div>
           <div class="user-info-item">
             正在学习:
@@ -68,6 +68,11 @@
 
 <script setup>
 import { getAssetsFile } from "@/util/utils.js";
+import { useUserStore } from '@/store/user'
+
+
+const store = useUserStore()
+
 const courseTypes = [
   { type: '计算机', typeList: ['大数据与人工智能', '算法'] },
   { type: '外语', typeList: ['口语', '写作', '翻译'] },

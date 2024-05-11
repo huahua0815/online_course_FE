@@ -84,7 +84,7 @@ const courseInfo = ref([
 ]);
 
 const handleAddCourse = () => {
-  
+  router.push('/course/create-course')
 }
 </script>
 

@@ -1,7 +1,9 @@
 <script setup>
 import {DArrowRight,Edit }  from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/user'
 
+const store = useUserStore()
 const router = useRouter()
 const list  = [
   {
@@ -80,7 +82,7 @@ const list  = [
 <template>
   <div class="exam-list-wrap">
     <div class="teacher-operation flex justify-start mb-4">
-        <el-button type="primary" :icon="Edit" size="small" @click="router.push({name:'CreateExam'})">发布考试</el-button>
+        <el-button type="primary" v-if="store.isTeacher" :icon="Edit" size="small" @click="router.push({name:'CreateExam'})">发布考试</el-button>
     </div>
    <div class="exam-list">
     <div class="exam-list-card" v-for="item, index in list" :key="index">
