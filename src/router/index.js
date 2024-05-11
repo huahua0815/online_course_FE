@@ -80,6 +80,21 @@ const router = createRouter({
           component: () => import('@/views/notice/index.vue')
         },
         {
+          path: '/homework-detail',
+          name: 'HomeworkDetail',
+          component: () => import('@/views/homework/detail.vue')
+        },
+        {
+          path: '/create-homework',
+          name: 'HomeworkCreate',
+          component: () => import('@/views/homework/create-homework.vue')
+        },
+        {
+          path: '/homework-manage',
+          name: 'HomeworkManage',
+          component: () => import('@/views/homework/manage.vue')
+        },
+        {
           path: '/teacher',
           name: 'Teacher',
           component: () => import('@/views/teacher/index.vue')

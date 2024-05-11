@@ -20,7 +20,8 @@
         <div class="info-detail-item timespan">
           {{ `进行至第${info.timeSpan}，共${info.totalTimeSpan}` }}
         </div>
-        <el-button type="primary">开始学习</el-button>
+        <el-button v-if="store.isStudent" type="primary">开始学习</el-button>
+        <el-button v-if="store.isTeacher ||store.isAdmin" @click="handlePostHomeWork" type="primary">发布作业</el-button>
       </div>
     </div>
     <div class="course-detail-intro">
@@ -41,7 +42,7 @@
             <div class="detail-into-item">
               <div class="detail-intro-item-title">
                 <el-icon color="#409eff" size="16"><Calendar /></el-icon>
-                <span>课程大纲</span>
+                <span>考试大纲</span>
               </div>
               <div class="detail-intro-item-content">
                 <el-tree
@@ -85,6 +86,11 @@
             </div>
           </div>
         </el-tab-pane>
+        <el-tab-pane label="课程作业" name="homework">
+          <div class="panel-wrap">
+        
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <el-dialog
@@ -111,7 +117,11 @@ import { getAssetsFile } from "@/util/utils.js";
 import {
  Plus
 } from '@element-plus/icons-vue'
+import { useUserStore } from '@/store/user'
+import { useRouter } from "vue-router";
 
+const router = useRouter()
+const store = useUserStore()
 const activeName = ref("detail");
 const dialogVisible = ref(false)
 const info = reactive({
@@ -200,6 +210,10 @@ const handleTabChange = () => {};
 
 const handlePostMessage = ()=>{
 
+}
+
+const handlePostHomeWork = ()=>{
+  router.push('/create-homework')
 }
 </script>
 

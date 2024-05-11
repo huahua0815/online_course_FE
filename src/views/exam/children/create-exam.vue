@@ -163,7 +163,7 @@ const handleSubmit = async() => {
             </div>
             <div class="table-wrap" v-else>
                 <div class="operation flex justify-end">
-                    <el-button :icon="Edit" type="primary" @click="dialogVisible = true">添加</el-button>
+                    <el-button :icon="Edit" type="primary" @click="dialogVisible = true">添加考试题目</el-button>
                 </div>
                 <el-table :data="tableData">
                     <el-table-column type="index" label="序号" prop="index" min-width="32">
