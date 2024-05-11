@@ -1,14 +1,41 @@
 <script setup>
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import { DArrowRight, Edit } from '@element-plus/icons-vue'
-import _ from 'lodash'
+import _ from 'lodash' 
+import { getCourseList,addExam } from '@/api/index'
+import { ElMessage } from "element-plus";
+import  dayjs  from "dayjs";
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const formData = reactive({
     name: '',
-    coursename: '',
+    courseId: '',
     startTime: '',
     endTime: '',
-    content: []
+    content: '',
+})
+
+const params = {
+  "courseName": "",
+  "pageParam": {
+    "pageNum": 1,
+    "pageSize": 100,
+  },
+  "typeId": ""
+}
+
+const courseTypes = ref([])
+
+onMounted(async()=>{
+  const { data } = await getCourseList(params)
+  courseTypes.value = data.list.map(item=>{
+    return{
+      label: item.courseName,
+      value: item.courseId
+    }
+  })
+  console.log('courseType', courseTypes.value)
 })
 
 const active = ref(0)
@@ -81,6 +108,24 @@ const canPost = computed(() => {
 const handleUpdate = (item) => {
     console.log(item)
 }
+
+const handleSubmit = async() => {
+  formData.content = JSON.stringify(tableData.value)
+  console.log('content is', formData.content)
+  formData.startTime = dayjs(formData.startTime).format('YYYY-MM-DD HH:mm:ss')
+  formData.endTime = dayjs(formData.endTime).format('YYYY-MM-DD HH:mm:ss')
+  try{
+    const {code,data, message} = await addExam(formData)
+    if(code == 0){
+      ElMessage.success('发布考试成功！')
+      router.push('/exam/list')
+    }else{
+      ElMessage.error(message)
+    }
+  }catch(e){
+    ElMessage.error('发布考试失败！')
+  }
+}
 </script>
 
 <template>
@@ -99,16 +144,17 @@ const handleUpdate = (item) => {
                     <el-form-item label="考试名称">
                         <el-input v-model="formData.name" />
                     </el-form-item>
-                    <el-form-item label="课程名称">
-                        <el-input v-model="formData.coursename" />
+                    <el-form-item label="课程">
+                      <el-select v-model="formData.courseId"  placeholder="请选择考试课程"
+                        style="width: 240px">
+                        <el-option v-for="item in  courseTypes" :key="item" :label="item.label" :value="item.value" />
+                    </el-select>
                     </el-form-item>
                     <el-form-item label="开始时间">
-                        <el-time-select v-model="formData.startTime" style="width: 240px" :max-time="formData.endTime"
-                            class="mr-4" placeholder="开始时间" start="08:30" step="00:15" end="18:30" />
+                      <el-date-picker v-model="formData.startTime" type="datetime" placeholder="请选择考试开始时间" />
                     </el-form-item>
                     <el-form-item label="结束时间">
-                        <el-time-select v-model="formData.endTime" style="width: 240px" :min-time="formData.startTime"
-                            class="mr-4" placeholder="结束时间" start="08:30" step="00:15" end="18:30" />
+                      <el-date-picker v-model="formData.endTime" type="datetime" placeholder="请选择考试结束时间" />
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="finishBasic">下一步</el-button>
@@ -141,7 +187,7 @@ const handleUpdate = (item) => {
                 </el-table>
                 <div class="step2-operation mt-4 flex justify-center">
                     <el-button @click="active = 0">上一步</el-button>
-                    <el-button type="primary" :disabled="!canPost" @click="finishStep2">发布试卷</el-button>
+                    <el-button type="primary"  @click="handleSubmit">发布试卷</el-button>
                 </div>
             </div>
         </div>

@@ -11,7 +11,7 @@
       <div class="flex-grow"></div>
       <el-menu-item index="/course/list" >课程中心</el-menu-item>
       <el-menu-item index="/exam">考试中心</el-menu-item>
-      <el-menu-item index="/notice">发布通知</el-menu-item>
+      <el-menu-item index="/notice">通知中心</el-menu-item>
       <el-sub-menu index="3">
         <template #title>个人中心</template>
         <el-menu-item index="3-1" >我的课程</el-menu-item>
@@ -33,6 +33,6 @@
 .student-content-wrap {
   padding:16px 24px;
   background-color: #d9d7d752;
-  min-height: calc(100vh - 92px);
+  min-height: calc(100vh - 60px);
 }
 </style>
