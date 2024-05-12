@@ -8,7 +8,7 @@
     </el-breadcrumb>
   <div class="create-homework-wrap">
  
-    <div class="title">当前课程名称:{{  }}</div>
+    <div class="title">当前课程名称:{{ courseInfo.courseName }}</div>
     <div class="form-wrap">
       <el-form :label-width="80" >
       <el-form-item label="作业名称">
@@ -118,11 +118,20 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive,watch } from "vue";
 const tableData = ref([]);
+const courseInfo = reactive({})
 const examTypes = ["单选题", "判断题", "问答题"];
 const optionTypes = ["A", "B", "C", "D"];
 const checkTypes = ["肯定选项", "否定选项"];
+
+watch(()=>sessionStorage.getItem('courseInfo'), (newVal)=>{
+  let obj = JSON.parse(newVal)
+  Object.assign(courseInfo, obj)
+  
+},{
+  deep:true,immediate: true
+})
 
 const formData = reactive({
     name: '',
@@ -188,10 +197,10 @@ const handleSubmit = async() => {
   formData.startTime = dayjs(formData.startTime).format('YYYY-MM-DD HH:mm:ss')
   formData.endTime = dayjs(formData.endTime).format('YYYY-MM-DD HH:mm:ss')
   try{
-    const {code,data, message} = await addExam(formData)
+    const {code,data, message} = await addHomework(formData)
     if(code == 0){
       ElMessage.success('发布考试成功！')
-      router.push('/exam/list')
+      router.push('/course/list')
     }else{
       ElMessage.error(message)
     }

@@ -2,51 +2,30 @@
  <div class="manage-wrap">
   <div class="teacher-operation"><el-button type="primary" :icon="Plus" @click="dialogVisible = true">新增课程</el-button></div>
   <el-table :data="courseInfo" >
-    <el-table-column prop="name" label="课程名" width="180" />
-    <el-table-column prop="teacher" label="讲师" width="180" />
-    <el-table-column prop="timeSpan" label="开课时长" width="180" />
-    <el-table-column prop="studentNum" label="学生人数" />
-    <el-table-column prop="" label="操作" width="360">
+    <el-table-column prop="courseName" label="课程名" min-width="80" />
+    <el-table-column prop="teacher" label="讲师" min-width="80" />
+    <el-table-column prop="introduction" label="简介" min-width="140" />
+    <el-table-column prop="courseExamFrame" label="考试大纲" min-width="180" />
+    <el-table-column prop="courseStartTime" label="创建时间" min-width="120" />
+    <el-table-column prop="courseEndTime" label="结束时间" min-width="120" />
+    <el-table-column prop="courseExamDate" label="考试时间" min-width="120" />
+    <el-table-column prop="courseSelectedCount" label="选课学生人数" />
+    <el-table-column prop="" label="操作" width="360" fixed="right">
       <el-button type="danger" >删除</el-button>
       <el-button type="warning" >更改</el-button>
       <el-button type="info" >详情</el-button>
     </el-table-column>
   </el-table>
-  <el-dialog
-    v-model="dialogVisible"
-    title="新增课程"
-    width="600"
-  >
-   <el-form :model="formData" :label-width="80">
-   <el-form-item label="课程名" prop="name"><el-input v-model="formData.name"/></el-form-item>
-   <el-form-item label="课程简介" prop="name"><el-input type="textarea" v-model="formData.intro"/></el-form-item>
-   <el-form-item label="课程封面" prop="cover"><el-upload action="#" list-type="picture-card" :auto-upload="false">
-    <el-icon><Plus /></el-icon>
-
-    <template #file="{ file }">
-      <div>
-        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-      </div>
-    </template>
-  </el-upload></el-form-item>
-   </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handlePostMessage">
-          新增
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
  </div>
 </template>
 
 <script setup>
-import { ref,reactive } from 'vue'
+import { ref,reactive, onMounted } from 'vue'
 import {
  Plus
 } from '@element-plus/icons-vue'
+import { getCourseList } from "@/api/index";
+
 const dialogVisible = ref(false)
 const formData = reactive({
   name:'',
@@ -126,6 +105,22 @@ const courseInfo = ref([
     studentNum: 55,
   },
 ]);
+
+const params = {
+  "pageParam": {
+    "pageNum": 1,
+    "pageSize": 100,
+  },
+}
+onMounted(async() => {
+  try{
+    const {code,data } = await getCourseList(params)
+    courseInfo.value = data.list
+  }catch(e){
+    ElMessage.error('获取课程列表失败!')
+  }
+});
+
 </script>
 
 <style scoped>
@@ -134,11 +129,11 @@ const courseInfo = ref([
   justify-content: flex-end;
 }
 .manage-wrap{
-  width: 900px;
+  width: 1160px;
   border-radius: 8px;
   padding: 16px;
   margin: 12px auto;
   background-color: #fff;
-  height: calc(100vh - 140px);
+  /* height: calc(100vh - 140px); */
 }
 </style>

@@ -1,14 +1,31 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { getAssetsFile } from "@/util/utils.js";
 import { useRouter } from "vue-router";
 import { Edit } from "@element-plus/icons-vue";
+import { getCourseList } from "@/api/index";
 
 const router = useRouter();
 
-const handleGoDetail = () => {
+const handleGoDetail = (item) => {
   router.push({ name: "CourseDetail" });
+  sessionStorage.setItem("courseInfo", JSON.stringify(item));
 };
+
+const params = {
+  "pageParam": {
+    "pageNum": 1,
+    "pageSize": 100,
+  },
+}
+onMounted(async() => {
+  try{
+    const {code,data } = await getCourseList(params)
+    courseInfo.value = data.list
+  }catch(e){
+    ElMessage.error('获取课程列表失败!')
+  }
+});
 
 const courseInfo = ref([
   {
@@ -98,7 +115,7 @@ const handleAddCourse = () => {
       class="course-card"
       v-for="info in courseInfo"
       :key="info"
-      @click="handleGoDetail"
+      @click="handleGoDetail(info)"
     >
       <div class="course-cover">
         <el-image
@@ -108,11 +125,11 @@ const handleAddCourse = () => {
         ></el-image>
       </div>
       <div class="course-text-info">
-        <div class="course-name">{{ info.name }}</div>
+        <div class="course-name">{{ info.courseName }}</div>
         <div class="course-teacher">{{ info.teacher }}</div>
         <div class="course-info">
-          <div class="course-info-left">{{ `进行至第${info.timeSpan}` }}</div>
-          <div class="course-info-right">{{ `${info.studentNum}人参加` }}</div>
+          <div class="course-info-left">{{ `开始时间:${info.courseStartTime}` }}</div>
+          <div class="course-info-right" style="color:#eca565;font-size: 14px;">{{ `${info.freeType == 0 ? '免费' : '付费'}` }}</div>
         </div>
       </div>
     </div>

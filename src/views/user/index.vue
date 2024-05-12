@@ -54,9 +54,9 @@
               </template>
             </el-tooltip>
             <template #footer>
-              <div class="flex space-between">
-                <span class="name">{{ item.name }}</span>
-                <span class="time">{{ item.time }}</span>
+              <div class="flex justify-between">
+                <span class="name">{{ item.teacherName || item.adminName }}</span>
+                <span class="time">{{ item.createTime }}</span>
               </div>
             </template>
           </el-card>
@@ -69,7 +69,8 @@
 <script setup>
 import { getAssetsFile } from "@/util/utils.js";
 import { useUserStore } from '@/store/user'
-
+import { getNoticeList} from "@/api/index";
+import { onMounted, ref } from 'vue'
 
 const store = useUserStore()
 
@@ -86,12 +87,52 @@ const learningNow = [
   '计算机基础', '大数据与人工智能', '算法'
 ]
 
-const noticeList = [
-  { title: '关于考试批改的通知', content: '各位同学：你们好！本次课程考试的批改工作已经完成。大家可以登录在线课程管理系统查看自己的考试成绩。请大家认真核对成绩，如有疑问，请在2024.5.16前与我联系。希望大家能从考试中总结经验，不断进步。', creattime: '2024.5.15', name: '教师苏轩' },
-  { title: '系统通知', content: '尊敬的用户：您好！为了给您提供更好的服务，在线课程管理系统将于2024.5.10进行维护升级。维护期间，系统功能可能会受到一定影响，具体如下：1.部分功能暂时无法使用。2.可能出现页面加载缓慢或显示异常。我们将尽最大努力缩短维护时间，确保系统尽快恢复正常运行。如您在使用过程中遇到任何问题，请及时联系我们的客服团队，联系电话18241576022感谢您的理解与支持，给您带来的不便，敬请谅解！', creattime: '2024.4.20', name: '系统管理员' },
-  { title: '课程发布作业的通知', content: '各位同学：大家好！通过在线课程管理系统，我将为大家发布本次课程的作业。具体信息如下：作业名称：数据结构与算法提交截止时间：2024.5.12作业要求及相关说明已在系统中详细列出，请大家及时登录系统查看并认真完成作业。如有任何疑问，请随时与我联系。', creattime: '2024.5.15', name: '教师王芳' }
+// const noticeList = [
+//   { title: '关于考试批改的通知', content: '各位同学：你们好！本次课程考试的批改工作已经完成。大家可以登录在线课程管理系统查看自己的考试成绩。请大家认真核对成绩，如有疑问，请在2024.5.16前与我联系。希望大家能从考试中总结经验，不断进步。', creattime: '2024.5.15', name: '教师苏轩' },
+//   { title: '系统通知', content: '尊敬的用户：您好！为了给您提供更好的服务，在线课程管理系统将于2024.5.10进行维护升级。维护期间，系统功能可能会受到一定影响，具体如下：1.部分功能暂时无法使用。2.可能出现页面加载缓慢或显示异常。我们将尽最大努力缩短维护时间，确保系统尽快恢复正常运行。如您在使用过程中遇到任何问题，请及时联系我们的客服团队，联系电话18241576022感谢您的理解与支持，给您带来的不便，敬请谅解！', creattime: '2024.4.20', name: '系统管理员' },
+//   { title: '课程发布作业的通知', content: '各位同学：大家好！通过在线课程管理系统，我将为大家发布本次课程的作业。具体信息如下：作业名称：数据结构与算法提交截止时间：2024.5.12作业要求及相关说明已在系统中详细列出，请大家及时登录系统查看并认真完成作业。如有任何疑问，请随时与我联系。', creattime: '2024.5.15', name: '教师王芳' }
 
-]
+// ]
+const noticeList = ref([])
+
+const params = {
+  content: "",
+  pageParam: {
+    endRow: 0,
+    hasNextPage: true,
+    hasPreviousPage: true,
+    isFirstPage: true,
+    isLastPage: true,
+    list: [null],
+    navigateFirstPage: 0,
+    navigateLastPage: 0,
+    navigatePages: 0,
+    navigatepageNums: [0],
+    nextPage: 0,
+    pageNum: 1,
+    pageSize: 20,
+    pages: 0,
+    prePage: 0,
+    size: 0,
+    startRow: 0,
+    total: 0,
+  },
+  title: "",
+};
+const getTableData = async () => {
+  // loading.value = true;
+  try {
+    const { data } = await getNoticeList(params);
+    noticeList.value = data.list;
+
+  } catch (e) {
+  } finally {
+    // loading.value = false;
+  }
+};
+onMounted(() => {
+  getTableData();
+});
 </script>
 
 <style scoped lang="scss">

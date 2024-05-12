@@ -45,7 +45,7 @@ const goTakeExam = (item)=>{
     <div class="exam-list-card" v-for="item, index in list" :key="index">
         <div class="name">{{ item.name }}</div>
         <div>
-            <span class="card-title">考试课程：</span>{{ item.name }}
+            <span class="card-title">考试课程：</span>{{ item.courseName }}
         </div>
         <div class="starttime ">
             <span class="card-title">开始时间：</span>{{ item.startTime }}</div>

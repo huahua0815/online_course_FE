@@ -4,7 +4,7 @@
       <el-breadcrumb-item :to="{ path: '/course/list' }"
         >课程列表</el-breadcrumb-item
       >
-      <el-breadcrumb-item>{{ info.name }}</el-breadcrumb-item>
+      <el-breadcrumb-item>{{ info.courseName }}</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="course-detail-info">
       <div class="course-detail-info-left">
@@ -18,7 +18,8 @@
         <div class="info-detail-item name">{{ info.name }}</div>
         <div class="info-detail-item">{{ info.teacher }}</div>
         <div class="info-detail-item timespan">
-          {{ `进行至第${info.timeSpan}，共${info.totalTimeSpan}` }}
+          课程考试时间：
+          {{ info.courseExamDate }}
         </div>
         <el-button v-if="store.isStudent" type="primary">开始学习</el-button>
         <el-button v-if="store.isTeacher ||store.isAdmin" @click="handlePostHomeWork" type="primary">发布作业</el-button>
@@ -37,7 +38,7 @@
                 <el-icon color="#409eff" size="16"><Collection /></el-icon>
                 <span>课程简介</span>
               </div>
-              <div class="detail-intro-item-content">{{ info.intro }}</div>
+              <div class="detail-intro-item-content">{{ info.introduction }}</div>
             </div>
             <div class="detail-into-item">
               <div class="detail-intro-item-title">
@@ -45,12 +46,13 @@
                 <span>考试大纲</span>
               </div>
               <div class="detail-intro-item-content">
-                <el-tree
+                <!-- <el-tree
                   style="max-width: 400px"
                   :data="courseData"
                   :props="defaultProps"
                   @node-click="handleNodeClick"
-                />
+                /> -->
+                {{ info.courseExamFrame }}
               </div>
             </div>
           </div>
@@ -112,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { getAssetsFile } from "@/util/utils.js";
 import {
  Plus
@@ -125,15 +127,23 @@ const store = useUserStore()
 const activeName = ref("detail");
 const dialogVisible = ref(false)
 const info = reactive({
-  cover: "img/编程导论.jpeg",
-  name: "计算机编程导论",
-  teacher: "张伟",
-  timeSpan: "8周",
-  studentNum: 50,
-  totalTimeSpan: "10周",
-  intro:
-    "《计算机导论》是专业基础课，教学任务是使学生掌握计算机科学的相关基础知识，通过本课程的学习，要求学生理解计算机运行大概过程、掌握简单数值数据在计算机中的表示、了解计算机硬件的基本组成、了解计算机软件的相关知识。",
-});
+  courseId:-1,
+  introduction:'',
+  freeType: 0,
+  courseExamFrame:'',
+  courseStartTime:'',
+  courseEndTime:'',
+  courseExamDate:'',
+  typeName:''
+ });
+
+watch(()=>sessionStorage.getItem('courseInfo'), (newVal)=>{
+  let obj = JSON.parse(newVal)
+  Object.assign(info, obj)
+  
+},{
+  deep:true,immediate: true
+})
 
 const courseData = [
   { label: "第一章：计算机概述" },

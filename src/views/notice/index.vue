@@ -36,6 +36,7 @@ const dialogVisible = ref(false);
 const formData = reactive({
   title: "",
   content: "",
+  noticeId:-1,
 });
 const operationType = ref("create");
 
@@ -96,17 +97,18 @@ const handleAddNotice = () => {
 const hanldeUpdateNotice = (row) => {
   dialogVisible.value = true;
   operationType.value = "update";
-  formData.title = row.title;
-  formData.content = row.content;
+  Object.assign(formData, row);
 };
 
 const handleDeleteNotice = async (row) => {
-  if(row.teacherId != store.info.userId && row.adminId != store.info.userId){
-    ElMessage.error('无权限删除')
-    return 
-  }
+  console.log(row, store.info.userId)
+  // if(row.teacherId != store.info.userId && row.adminId != store.info.userId){
+  //   ElMessage.error('无权限删除')
+  //   return 
+  // }
   try {
       const { noticeId } = row
+      console.log('del')
       const { code, data, message } = await deleteNotice({ noticeId});
       if (code == 0) {
         ElMessage.success("删除通知成功!");
@@ -116,7 +118,7 @@ const handleDeleteNotice = async (row) => {
       }
     
   } catch (e) {
-    ElMessage.error("删除通知失败!");
+    // ElMessage.error("删除通知失败!");
   } finally {
   
   }
@@ -153,7 +155,7 @@ const handleDeleteNotice = async (row) => {
           min-width="180"
           label="更新时间"
         ></el-table-column>
-        <el-table-column prop="" label="操作" width="300">
+        <el-table-column prop="" label="操作" width="300" fixed="right">
           <template #default="scope">
             <el-popconfirm title="确认删除这条通知?" @confirm="handleDeleteNotice(scope.row)">
     <template #reference >
@@ -196,5 +198,7 @@ const handleDeleteNotice = async (row) => {
 .notice-wrap {
   padding: 24px;
   background-color: #fff;
+  width: 1100px;
+  margin: 0 auto;
 }
 </style>

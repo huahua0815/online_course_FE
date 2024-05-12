@@ -37,9 +37,13 @@ const handleSubmit = async () => {
   console.log('formData', formData)
   try{
     const {code,data} = await createCourse(params)
-
+    if(code == 0){
+      ElMessage.success('发布课程成功！')
+    }else{
+      ElMessage.error(message)
+    }
   }catch(e){
-
+    ElMessage.error('发布课程失败！')
   }
 }
 
