@@ -8,7 +8,7 @@ export const register  = (data) => requests({ url: '/user/signUp', data, method:
 //课程
 export const createCourse = (data) => requests({ url: '/course/add', data, method: 'post' })
 export const getCourseList = (data) => requests({ url: '/course/getMainPage', method: 'post', data} )
-export const getCourseCoverList = (data) => requests({ url: '/course/getCoverByCourseIdList', method: 'post', data} )
+export const getCourseFileList = (data) => requests({ url: '/course/getCoverByCourseIdList', method: 'post', data,responseType: 'blob',headers: { 'Content-Type': 'application/json; application/octet-stream' }} )
 export const updateCourse = (data) => requests({ url: '/course/update', data, method: 'post' })
 export const deleteCourse = (data) => requests({ url: '/course/delete', data, method: 'post' })
 

@@ -3,8 +3,9 @@ import { reactive, ref, onMounted } from "vue";
 import { getAssetsFile } from "@/util/utils.js";
 import { useRouter } from "vue-router";
 import { Edit } from "@element-plus/icons-vue";
-import { getCourseList } from "@/api/index";
-
+import { getCourseList,getCourseFileList } from "@/api/index";
+import JSZip from 'jszip'
+import {ElMessage} from 'element-plus'
 const router = useRouter();
 
 const handleGoDetail = (item) => {
@@ -19,12 +20,36 @@ const params = {
   },
 }
 onMounted(async() => {
-  try{
+  // try{
     const {code,data } = await getCourseList(params)
     courseInfo.value = data.list
-  }catch(e){
-    ElMessage.error('获取课程列表失败!')
-  }
+    const idArr = data.list.map(item=>item.courseId)
+    const response = await getCourseFileList([350417])
+  //   const blob =
+  //   Object.prototype.toString.call(response) === "[object Blob]"
+  //     ? response
+  //     : new Blob([response], { type: "application/zip" });
+  // // new Blob([data])用来创建URL的file对象或者blob对象
+  // let url = window.URL.createObjectURL(blob);
+  // // 生成一个a标签
+  // let link = document.createElement("a");
+  // link.style.display = "none";
+  // link.href = url;
+  // // 生成时间戳
+  // let timestamp = new Date().getTime();
+  // link.download = `${timestamp}.zip`;
+  // document.body.appendChild(link);
+  // link.click();
+  // document.body.removeChild(link);
+    const zip = new JSZip()
+    zip.loadAsync(response).then((res) => {
+	  consol.log(res.files) // 每个file
+}) 
+
+  // }catch(e){
+  //   ElMessage.error(e)
+  //   ElMessage.error('获取课程列表失败!')
+  // }
 });
 
 const courseInfo = ref([

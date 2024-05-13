@@ -16,7 +16,7 @@ export default defineConfig({
     proxy: {
       '^/api': {
         // target: 'http://192.168.111.130:8085', 
-        target: 'http://192.168.100.169:8085', 
+        target: 'http://192.168.2.44:8085', 
         changeOrigin: true, //开启代理
         rewrite: path => path.replace(/^\/api/, '')
       }
