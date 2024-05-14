@@ -4,7 +4,7 @@
 
 <template>
    <el-menu :default-active="activeIndex" class="el-menu-wrap" mode="horizontal" :ellipsis="false"
-      background-color="#CADFF6C4" text-color="#7e7e7e" @select="handleSelect" router default-active="/user">
+      background-color="#CADFF6C4" text-color="#7e7e7e" @select="handleSelect" router default-active="/course/list">
       <el-menu-item index="/user">
         <span class="title">在线课程系统-教师端</span>
       </el-menu-item>

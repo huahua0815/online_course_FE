@@ -3,7 +3,7 @@ import requests from "./request";
 
 export const login = (data) => requests({ url: '/user/login', data, method: 'post' })
 export const register  = (data) => requests({ url: '/user/signUp', data, method: 'post' })
-
+export const getUserList = (params) => requests({ url: '/user/getUserList', params, method: 'get' })
 
 //课程
 export const createCourse = (data) => requests({ url: '/course/add', data, method: 'post' })
@@ -11,6 +11,16 @@ export const getCourseList = (data) => requests({ url: '/course/getMainPage', me
 export const getCourseFileList = (data) => requests({ url: '/course/getCoverByCourseIdList', method: 'post', data,responseType: 'blob',headers: { 'Content-Type': 'application/json; application/octet-stream' }} )
 export const updateCourse = (data) => requests({ url: '/course/update', data, method: 'post' })
 export const deleteCourse = (data) => requests({ url: '/course/delete', data, method: 'post' })
+
+//选课关系
+export const addSC = (data) => requests({ url: '/selectCourse/add', data, method: 'post' })
+export const getSCByStudentId = (params) => requests({ url: '/selectCourse/getCourseListByStudentId', method: 'get', params} )
+
+//留言
+export const createComment = (data) => requests({ url: '/comment/addComment', data, method: 'post' })
+export const createReply = (data) => requests({ url: '/comment/addReply', data, method: 'post' })
+export const getCommentList = (params) => requests({ url: '/comment/getComment', method: 'get', params} )
+
 
 //考试
 export const addExam = (data) => requests({ url: '/exam/add', data, method: 'post' })
@@ -28,4 +38,4 @@ export const getNoticeList = (data) => requests({ url: '/notice/getNoticeMainPag
 export const addHomework = (data) => requests({ url: '/homework/add', data, method: 'post' })
 export const updateHomework  = (data) => requests({ url: '/homework/update', data, method: 'post' })
 export const deleteHomework  = (data) => requests({ url: '/homework/delete', data, method: 'post' })
-export const getHomeworkList = (data) => requests({ url: '/homework/getHomeworkByScId', method: 'post', data} )
+export const getHomeworkList = (params) => requests({ url: '/homework/getHomeworkByCourseId', method: 'get', params} )

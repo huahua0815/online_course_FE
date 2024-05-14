@@ -3,7 +3,7 @@
       <el-breadcrumb-item :to="{ path: '/course/list' }"
         >课程列表</el-breadcrumb-item
       >
-      <el-breadcrumb-item>课程名称</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/course/detail' }">{{ courseInfo.courseName }}</el-breadcrumb-item>
       <el-breadcrumb-item>发布作业</el-breadcrumb-item>
     </el-breadcrumb>
   <div class="create-homework-wrap">
@@ -51,13 +51,7 @@
         <el-table-column prop="check2" label="否定选项" />
         <el-table-column label="操作" min-width="120">
           <template #default="scope">
-            <el-button
-              type="warning"
-              size="small"
-              @click="handleUpdate(scope.row)"
-              >更新</el-button
-            >
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button type="danger" size="small" @click="handleDelete(scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -119,16 +113,23 @@
 
 <script setup>
 import { ref, reactive,watch } from "vue";
+import { ElMessage } from "element-plus";
+import {addHomework} from '@/api/index.js'
+import _ from "lodash";
+import dayjs from "dayjs";
+import { useRouter } from "vue-router";
+
 const tableData = ref([]);
 const courseInfo = reactive({})
+const router = useRouter()
 const examTypes = ["单选题", "判断题", "问答题"];
 const optionTypes = ["A", "B", "C", "D"];
 const checkTypes = ["肯定选项", "否定选项"];
 
+
 watch(()=>sessionStorage.getItem('courseInfo'), (newVal)=>{
   let obj = JSON.parse(newVal)
   Object.assign(courseInfo, obj)
-  
 },{
   deep:true,immediate: true
 })
@@ -174,6 +175,7 @@ const handleAddQuestion = () => {
       });
       dialogVisible.value = false;
     } else {
+      ElMessage.error('请完善表单信息！')
     }
   });
 };
@@ -196,17 +198,22 @@ const handleSubmit = async() => {
   console.log('content is', formData.content)
   formData.startTime = dayjs(formData.startTime).format('YYYY-MM-DD HH:mm:ss')
   formData.endTime = dayjs(formData.endTime).format('YYYY-MM-DD HH:mm:ss')
+  formData.courseId = courseInfo.courseId
   try{
     const {code,data, message} = await addHomework(formData)
     if(code == 0){
-      ElMessage.success('发布考试成功！')
-      router.push('/course/list')
+      ElMessage.success('发布作业成功！')
+      router.push('/course/detail')
     }else{
       ElMessage.error(message)
     }
   }catch(e){
-    ElMessage.error('发布考试失败！')
+    ElMessage.error('发布作业失败！')
   }
+}
+
+const handleDelete = (index) => {
+  tableData.value.splice(index, 1);
 }
 </script>
 

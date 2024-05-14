@@ -9,14 +9,14 @@
     <div class="course-detail-info">
       <div class="course-detail-info-left">
         <el-image
-          :src="getAssetsFile(info.cover)"
+          :src="info.cover"
           style="width: 260px; height: 160px"
           fix="cover"
         ></el-image>
       </div>
       <div class="course-detail-info-right">
-        <div class="info-detail-item name">{{ info.name }}</div>
-        <div class="info-detail-item">{{ info.teacher }}</div>
+        <div class="info-detail-item name">{{ info.courseName }}</div>
+        <div class="info-detail-item">{{ info.teacherName }}</div>
         <div class="info-detail-item timespan">
           课程考试时间：
           {{ info.courseExamDate }}
@@ -59,17 +59,17 @@
         </el-tab-pane>
         <el-tab-pane label="课程留言" name="discuss">
           <div class="panel-wrap">
-            <el-button class="add-message" type="primary" :icon="Plus" size="large" @click="dialogVisible= true"/>
-            <div class="message-box" v-for="(item, index) in discuss">
-              <div class="message-ask">
+            <el-button class="add-message" type="primary" :icon="Plus" size="large" @click="addComment"/>
+            <div class="message-box" v-for="(item, index) in commentList">
+              <div class="message-ask" @click="addReply(item.comment.commentId)">
                 <div class="message-ask-left">
                   <img :src="getAssetsFile('img/学生头像.png')" alt="" />
                 </div>
                 <div class="message-ask-right">
-                  <div class="message-ask-right-name">学生{{ index + 1 }}</div>
-                  <div class="message-ask-right-word">{{ item.question }}</div>
+                  <div class="message-ask-right-name">{{ item.comment.commentUserName }}</div>
+                  <div class="message-ask-right-word">{{ item.comment.comment }}</div>
                   <div class="message-ask-right-createtime">
-                    {{ item.questionTime }}
+                    {{ item.commentTm }}
                   </div>
                 </div>
               </div>
@@ -90,21 +90,22 @@
         </el-tab-pane>
         <el-tab-pane label="课程作业" name="homework">
           <div class="panel-wrap">
-        
+            <div class="homework-item" v-for="(item, index) in homeworkList">
+            <el-button @click="handleGoHomeworkDetail(index)" link type="primary">{{ item.name }}</el-button></div>
           </div>
         </el-tab-pane>
       </el-tabs>
     </div>
     <el-dialog
     v-model="dialogVisible"
-    title="发布留言"
+    :title="operation == 'comment' ? '发布留言' : '回复留言'"
     width="500"
   >
-    <el-input type="textarea"></el-input>
+    <el-input type="textarea" v-model="comment"></el-input>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handlePostMessage">
+        <el-button type="primary" @click="handlePost">
           发布
         </el-button>
       </div>
@@ -114,13 +115,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
 import { getAssetsFile } from "@/util/utils.js";
+import { getCourseFileList,createComment, getCommentList, createReply,getSCByStudentId,getHomeworkList } from "@/api/index";
 import {
  Plus
 } from '@element-plus/icons-vue'
+import JSZip from 'jszip'
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 
 const router = useRouter()
 const store = useUserStore()
@@ -134,96 +138,133 @@ const info = reactive({
   courseStartTime:'',
   courseEndTime:'',
   courseExamDate:'',
-  typeName:''
+  typeName:'',
+  cover:''
  });
 
-watch(()=>sessionStorage.getItem('courseInfo'), (newVal)=>{
+ const getScStudentId = async()=>{
+  const {data,code } = await getSCByStudentId({studentId:store.info.userId})
+ }
+
+ const homeworkList = ref([])
+ const getHomeworkAll = async()=>{
+  const {data,code } = await getHomeworkList({courseId:info.courseId})
+  homeworkList.value = data
+ }
+
+ onMounted(()=>{
+  getCommentInfo()
+  getScStudentId()
+  getHomeworkAll()
+ })
+
+watch(()=>sessionStorage.getItem('courseInfo'), async(newVal)=>{
   let obj = JSON.parse(newVal)
   Object.assign(info, obj)
-  
-},{
+  const response = await getCourseFileList([info.courseId])
+    const zip = new JSZip()
+    zip.loadAsync(response).then((res) => {
+	  console.log('111',res.files) // 每个file
+    let zipName = '',imgName = ''
+    for(let name of Object.keys(res.files)){
+      if(name.endsWith('.zip')){
+        zipName = name
+      }else{
+        imgName = name
+      }
+    }
+    zip.file(imgName).async('base64').then((data) => {
+    let imgBase64 = 'data:image/jpeg;base64,' + data
+    // let url = window.URL.createObjectURL(temp);
+    info.cover = imgBase64
+    })
+})
+}
+,{
   deep:true,immediate: true
 })
 
-const courseData = [
-  { label: "第一章：计算机概述" },
-  { label: "第二章：计算机中的数据" },
-  { label: "第三章：Python语言及应用" },
-  { label: "第四章：程序设计引导" },
-  { label: "第五章：操作系统简介" },
-  { label: "第六章：计算机网络与物联网" },
-  { label: "第七章：数据库系统概论" },
-];
+const operation = ref('comment')
 
-const discuss = [
-  {
-    question: "什么是编程语言？",
-    answer:
-      "编程语言是一种用于与计算机进行交流的人工语言，它定义了一组指令和规则，用于编写计算机程序。",
-    questionTime: "2024-04-01 09:30",
-    answerTime: "2024-04-01 10:15",
-  },
-  {
-    question: "编程导论课程会涵盖哪些内容？",
-    answer:
-      "编程导论课程将介绍计算机编程的基本概念，包括算法、数据结构、编程范式等内容。",
-    questionTime: "2024-04-02 14:15",
-    answerTime: "2024-04-02 15:00",
-  },
-  {
-    question: "我需要具备哪些先修知识才能参加编程导论课程？",
-    answer:
-      "编程导论课程不要求先修知识，它适合初学者入门。只要你对计算机编程感兴趣，就可以参加。",
-    questionTime: "2024-04-03 10:45",
-    answerTime: "2024-04-03 11:30",
-  },
-  {
-    question: "编程导论课程有哪些学习资源可用？",
-    answer: "我们提供课程讲义、在线学习平台和编程练习题等学习资源供学生使用。",
-    questionTime: "2024-04-04 16:20",
-    answerTime: "2024-04-04 17:00",
-  },
-  {
-    question: "哪种编程语言会在编程导论课程中使用？",
-    answer: "编程导论课程中将使用Python作为主要的编程语言进行教学和实践。",
-    questionTime: "2024-04-05 11:30",
-    answerTime: "2024-04-05 12:15",
-  },
-  {
-    question: "导论课程是否会有编程作业？",
-    answer:
-      "是的，编程导论课程将包含一些编程作业，以帮助学生巩固所学的概念和技能。",
-    questionTime: "2024-04-06 13:45",
-    answerTime: "2024-04-06 14:30",
-  },
-  {
-    question: "导论课程是否有期末考试？",
-    answer:
-      "编程导论课程将有一个综合性的期末项目，用于评估学生对所学知识的理解和应用能力。",
-    questionTime: "2024-04-08 15:20",
-    answerTime: "2024-04-08 16:00",
-  },
-  {
-    question: "有没有推荐的参考书籍？",
-    answer:
-      "我们会提供一份推荐书单，包含一些优秀的编程导论相关的书籍供学生参考阅读。",
-    questionTime: "2024-04-09 10:30",
-    answerTime: "2024-04-09 11:15",
-  },
-];
-
-const defaultProps = {
-  children: "children",
-  label: "label",
-};
-const handleTabChange = () => {};
-
-const handlePostMessage = ()=>{
-
+const handlePost = ()=>{
+  if(operation.value == 'comment'){
+    handlePostMessage()
+  }
+  if(operation.value == 'reply'){
+    handleAddReply(curCommentId.value)
+  }
 }
 
+const comment = ref('')
+const curCommentId = ref(-1)
+const handlePostMessage = async()=>{
+  try{
+    const params = {
+      comment:comment.value,
+      commentUserId: store.info.userId,
+      courseId: info.courseId,
+      commentPrivilege: store.isTeacher ? 'teacher' :'student'
+    }
+    console.log('params is', params)
+    const { code ,data} = await createComment(params)
+    if(code == 0){
+      ElMessage.success('评论成功！')
+      getCommentInfo()
+    }
+  }catch(e){
+    ElMessage.error(e)
+  }finally{
+    dialogVisible.value = false
+    comment.value = ''
+  }
+}
+
+const handleAddReply = async(commentId)=>{
+  try{
+    const params = {
+      comment:comment.value,
+      commentUserId: store.info.userId,
+      courseId: info.courseId,
+      commentPrivilege: 'teacher',
+      commentId
+    }
+    console.log('params is', params)
+    const { code ,data} = await createReply(params)
+    if(code == 0){
+      ElMessage.success('回复成功！')
+      getCommentInfo()
+    }
+  }catch(e){
+    ElMessage.error(e)
+  }finally{
+    dialogVisible.value = false
+    comment.value = ''
+  }
+}
+
+const addComment = ()=>{
+  operation.value = 'comment'
+  dialogVisible.value = true
+}
+const addReply = ( commentId)=>{
+  operation.value = 'reply'
+  dialogVisible.value = true
+  curCommentId.value = commentId
+
+}
 const handlePostHomeWork = ()=>{
   router.push('/create-homework')
+}
+
+const commentList = ref([])
+const getCommentInfo = async()=>{
+  const {data} =await getCommentList({courseId: info.courseId})
+  commentList.value = data
+}
+
+const handleGoHomeworkDetail =(index)=>{
+  sessionStorage.setItem('homework', JSON.stringify(homeworkList.value[index]))
+  router.push('/homework-detail')
 }
 </script>
 
@@ -281,6 +322,12 @@ const handlePostHomeWork = ()=>{
 .message-box {
   margin-bottom: 12px;
 }
+.message-ask{
+  &:hover{
+    background-color: #b5c6e355;
+    cursor: pointer;
+  }
+}
 .message-ask,
 .message-answer {
   display: flex;
@@ -315,8 +362,9 @@ const handlePostHomeWork = ()=>{
   position: relative;
 }
 .add-message{
-  position: absolute;
-  right: 20px;
-  top: 20px;
+  // position: absolute;
+
+display: flex;
+justify-content: flex-end;
 }
 </style>

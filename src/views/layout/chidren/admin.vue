@@ -8,11 +8,11 @@ const router = useRouter()
 const title = ref("在线课程系统");
 const menuInfoAdmin = [
     { name: "课程管理", icon: "SetUp", path: "/course/manage" },
-    { name: "用户管理", icon: "User", path: "/teacher1" },
+    { name: "学生管理", icon: "User", path: "/teacher1" },
     { name: "讲师管理", icon: "Orange", path: "/teacher" },
     { name: "留言管理", icon: "ChatDotSquare", path: "/discuss" },
     { name: "考试管理", icon: "Calendar", path: "/exam/manage" },
-    { name: "作业管理", icon: "School", path: "/homework" },
+    { name: "作业管理", icon: "School", path: "/homework-manage" },
     { name: "通知管理", icon: "MessageBox", path: "/notice" },
 ];
 </script>

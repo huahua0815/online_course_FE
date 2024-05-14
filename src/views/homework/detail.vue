@@ -17,7 +17,7 @@
       总分：{{ examTypeCount[0]["总分"] }}分
     </div>
     <div>
-      <el-button type="primary">提交作业</el-button>
+      <el-button class="text-center mt-4" type="primary">提交作业</el-button>
     </div>
    </div>
   <div class="exam-area">
@@ -63,7 +63,7 @@
   const answer = ref([])
   
   const examTypeCount = [{"总题数":0,"总分":0,"判断题":0,"单选题":0,"问答题":0}]
-  watch(()=>sessionStorage.getItem('exam'), (newVal)=>{
+  watch(()=>sessionStorage.getItem('homework'), (newVal)=>{
     let obj = JSON.parse(newVal)
     Object.assign(info, obj)
     console.log('info ',info)
@@ -80,7 +80,7 @@
         examTypeCount[0]["问答题"] += 1
       }
       examTypeCount[0]["总题数"] += 1
-      examTypeCount[0]["总分"] += item.score
+      examTypeCount[0]["总分"] += Number(item.score)
     })
     console.log('content ',content.value, answer.value)
   },{

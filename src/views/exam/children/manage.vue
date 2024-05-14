@@ -177,6 +177,6 @@ const handleDeleteNotice = async (row) => {
 .notice-wrap {
   padding: 24px;
   background-color: #fff;
-  width: 1100px;
+  width: 1060px;
 }
 </style>

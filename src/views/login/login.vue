@@ -49,7 +49,7 @@
               <el-radio-group v-model="regFormData.userType">
                 <el-radio-button label="学生" value="1" />
                 <el-radio-button label="教师" value="2" />
-                <el-radio-button label="管理员" value="3" />
+              
               </el-radio-group>
             </el-form-item>
             <el-form-item>
@@ -58,9 +58,11 @@
               </div>
             </el-form-item>
           </el-form>
+          <div> <el-button class="reg-btn" type="primary" link @click="isLogin = true" v-if="role != 'admin'"
+            size="small" >返回登录</el-button></div>
+      </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -91,8 +93,8 @@ const regFormData = reactive({
 })
 const m = {
   1: { route: '/user' },
-  2: {  route: '/teacher' },
-  3: {  route: '/admin' },
+  2: {  route: '/course/list' },
+  3: {  route: '/course/manage' },
 }
 
 const handleLogin = async() => {

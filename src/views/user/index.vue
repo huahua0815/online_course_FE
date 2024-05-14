@@ -20,8 +20,14 @@
           </el-carousel>
         </div>
         <div class="user-info">
+         <template v-if="store.isTeacher">
+          <el-image  style="width: 32px; height:32px" :src="getAssetsFile('img/老师头像.png')"></el-image>
+            <span class="ml-4">{{ store.info.username }}</span>
+         </template>
+         <template v-if="store.isStudent">
           <div class="user-info-item">
-            <el-image style="width: 32px; height:32px" :src="getAssetsFile('img/学生头像.png')"></el-image>
+            <el-image v-if="store.isTeacher" style="width: 32px; height:32px" :src="getAssetsFile('img/老师头像.png')"></el-image>
+            <el-image  style="width: 32px; height:32px" :src="getAssetsFile('img/学生头像.png')"></el-image>
             <span class="ml-4">{{ store.info.username }}</span>
           </div>
           <div class="user-info-item">
@@ -36,6 +42,7 @@
           <div class="user-info-item mt-14 justify-center">
             <el-button type="primary">继续学习</el-button>
           </div>
+         </template>
         </div>
       </div>
       <div class="notice-area">
@@ -55,7 +62,7 @@
             </el-tooltip>
             <template #footer>
               <div class="flex justify-between">
-                <span class="name">{{ item.teacherName || item.adminName }}</span>
+                <span class="name">{{ item.teacherName || item.adminUsername }}</span>
                 <span class="time">{{ item.createTime }}</span>
               </div>
             </template>
@@ -69,8 +76,9 @@
 <script setup>
 import { getAssetsFile } from "@/util/utils.js";
 import { useUserStore } from '@/store/user'
-import { getNoticeList} from "@/api/index";
+import { getNoticeList, getSCByStudentId} from "@/api/index";
 import { onMounted, ref } from 'vue'
+
 
 const store = useUserStore()
 
@@ -82,9 +90,6 @@ const courseTypes = [
   { type: '专升本', typeList: ['河南', '广东', '浙江'] },
   { type: '期末冲刺', typeList: ['高数', '线性代数', '概率论'] },
   { type: '认证教育', typeList: ['工科', '理科', '文科'] },
-]
-const learningNow = [
-  '计算机基础', '大数据与人工智能', '算法'
 ]
 
 // const noticeList = [
@@ -130,6 +135,25 @@ const getTableData = async () => {
     // loading.value = false;
   }
 };
+
+const learningNow = ref([])
+const getScStudentId = async()=>{
+  const {data,code } = await getSCByStudentId({studentId:store.info.userId})
+  learningNow.value = data.map(i=>i.courseName)
+ }
+
+onMounted(async() => {
+  // try{
+    await getScStudentId()
+    const {code,data } = await getCourseList(params)
+    courseInfo.value = data.list
+    courseInfo.value.forEach(item=>{
+      item.isSelected = selectedCourseId.value.includes(item.courseId)
+    })
+   
+}) 
+
+
 onMounted(() => {
   getTableData();
 });

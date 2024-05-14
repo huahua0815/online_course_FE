@@ -2,10 +2,10 @@
  <div class="manage-wrap">
   <div class="teacher-operation"><el-button type="primary" :icon="Plus" @click="dialogVisible = true">新增课程</el-button></div>
   <el-table :data="courseInfo" >
-    <el-table-column prop="courseName" label="课程名" min-width="80" />
+    <el-table-column prop="courseName" label="课程名" min-width="140" />
     <el-table-column prop="teacher" label="讲师" min-width="80" />
-    <el-table-column prop="introduction" label="简介" min-width="140" />
-    <el-table-column prop="courseExamFrame" label="考试大纲" min-width="180" />
+    <el-table-column prop="introduction" label="简介" min-width="300" />
+    <el-table-column prop="courseExamFrame" label="考试大纲" min-width="240" />
     <el-table-column prop="courseStartTime" label="创建时间" min-width="120" />
     <el-table-column prop="courseEndTime" label="结束时间" min-width="120" />
     <el-table-column prop="courseExamDate" label="考试时间" min-width="120" />
@@ -129,7 +129,7 @@ onMounted(async() => {
   justify-content: flex-end;
 }
 .manage-wrap{
-  width: 1160px;
+  width: 920px;
   border-radius: 8px;
   padding: 16px;
   margin: 12px auto;

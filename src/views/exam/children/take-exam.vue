@@ -17,7 +17,7 @@
     总分：{{ examTypeCount[0]["总分"] }}分
   </div>
   <div>
-    <el-button type="primary">提交试卷</el-button>
+    <el-button class="text-center mt-4" type="primary">提交试卷</el-button>
   </div>
  </div>
 <div class="exam-area">
@@ -80,7 +80,7 @@ watch(()=>sessionStorage.getItem('exam'), (newVal)=>{
       examTypeCount[0]["问答题"] += 1
     }
     examTypeCount[0]["总题数"] += 1
-    examTypeCount[0]["总分"] += item.score
+    examTypeCount[0]["总分"] += Number(item.score)
   })
   console.log('content ',content.value, answer.value)
 },{
