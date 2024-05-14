@@ -10,15 +10,14 @@
       </el-menu-item>
       <div class="flex-grow"></div>
       <el-menu-item index="/course/list" >课程中心</el-menu-item>
-      <el-menu-item index="/exam">考试及作业</el-menu-item>
+      <el-menu-item index="/exam">考试中心</el-menu-item>
       <el-sub-menu index="3">
         <template #title>个人中心</template>
-        <el-menu-item index="3-1" >我的课程</el-menu-item>
+        <el-menu-item index="/course/mylist" >我的课程</el-menu-item>
         <el-menu-item index="3-2">我的留言</el-menu-item>
         <el-menu-item index="3-3">我的考试</el-menu-item>
         <el-menu-item index="3-4">我的作业</el-menu-item>
         <el-menu-item index="3-5">我的学习进度</el-menu-item>
-        <el-menu-item index="3-6">个人资料</el-menu-item>
         <el-menu-item index="/login">退出登录</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/login">后台中心</el-menu-item>

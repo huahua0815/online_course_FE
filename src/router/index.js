@@ -25,6 +25,11 @@ const router = createRouter({
               component: () => import('@/views/course/children/list.vue')
             },
             {
+              path: 'mylist',
+              name: 'MyCourseList',
+              component: () => import('@/views/course/children/mylist.vue')
+            },
+            {
               path: 'create-course',
               name: 'CreateCourse',
               component: () => import('@/views/course/children/create-course.vue')
@@ -51,6 +56,11 @@ const router = createRouter({
               path: 'list',
               name: 'ExamList',
               component: () => import('@/views/exam/children/list.vue')
+            },
+            {
+              path: 'mylist',
+              name: 'MyExamList',
+              component: () => import('@/views/exam/children/mylist.vue')
             },
             {
               path: 'create-exam',
@@ -134,7 +144,7 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   const store = useUserStore()
   console.log('beforeEach', store.info)
-  if(store.info.name == ''){
+  if(store.info.username == ''){
     if(to.path == '/login'){
       next()
     }else{

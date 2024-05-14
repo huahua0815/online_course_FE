@@ -1,6 +1,6 @@
 <template>
     <div class="homework-wrap">
-      <div class="homework-operation"><el-button type="primary" :icon="Plus">新增用户</el-button></div>
+      <div v-if="store.isTeacher" class="homework-operation"><el-button type="primary" :icon="Plus">新增作业</el-button></div>
       <el-table :data="tableData" :height="tableHeight">
         <el-table-column prop="name" label="作业名称" min-width="100" />
         <el-table-column prop="content" label="作业内容" min-width="400" />
@@ -24,7 +24,9 @@
     Plus
   } from '@element-plus/icons-vue'
   import { getHomeworkList } from "@/api/index";
-  
+  import { useUserStore} from "@/store/user"
+
+  const store = useUserStore()
   const tableHeight = ref(700)
   
   const getList = async () => {

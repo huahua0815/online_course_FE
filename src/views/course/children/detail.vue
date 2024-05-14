@@ -21,7 +21,7 @@
           课程考试时间：
           {{ info.courseExamDate }}
         </div>
-        <el-button v-if="store.isStudent" type="primary">开始学习</el-button>
+        <!-- <el-button v-if="store.isStudent" type="primary">开始学习</el-button> -->
         <el-button v-if="store.isTeacher ||store.isAdmin" @click="handlePostHomeWork" type="primary">发布作业</el-button>
       </div>
     </div>
@@ -55,11 +55,23 @@
                 {{ info.courseExamFrame }}
               </div>
             </div>
+            <div class="detail-into-item">
+              <div class="detail-intro-item-title">
+                <el-icon color="#409eff" size="16"><Calendar /></el-icon>
+                <span>课程文件</span>
+              </div>
+              <div class="detail-intro-item-content">
+                <a style="color: #409eff;" class="pl-4" :href="downloadHref" :download="`${info.courseName}.zip`">
+                  点这里下载
+                </a>
+              
+              </div>
+            </div>
           </div>
         </el-tab-pane>
         <el-tab-pane label="课程留言" name="discuss">
           <div class="panel-wrap">
-            <el-button class="add-message" type="primary" :icon="Plus" size="large" @click="addComment"/>
+            <div class="flex justify-end">   <el-button  type="primary" :icon="Plus"  @click="addComment"/></div>
             <div class="message-box" v-for="(item, index) in commentList">
               <div class="message-ask" @click="addReply(item.comment.commentId)">
                 <div class="message-ask-left">
@@ -73,15 +85,15 @@
                   </div>
                 </div>
               </div>
-              <div class="message-answer">
+              <div class="message-answer" v-for="(reply, index) in item.replyList">
                 <div class="message-answer-left">
                   <img :src="getAssetsFile('img/老师头像.png')" alt="" />
                 </div>
                 <div class="message-answer-right">
-                  <div class="message-answer-right-name">老师</div>
-                  <div class="message-answer-right-word">{{ item.answer }}</div>
+                  <div class="message-answer-right-name">{{ reply.commentUserName }}</div>
+                  <div class="message-answer-right-word">{{ reply.comment }}</div>
                   <div class="message-answer-right-createtime">
-                    {{ item.answerTime }}
+                    {{ item.replyTm }}
                   </div>
                 </div>
               </div>
@@ -158,6 +170,7 @@ const info = reactive({
   getHomeworkAll()
  })
 
+ const downloadHref= ref('')
 watch(()=>sessionStorage.getItem('courseInfo'), async(newVal)=>{
   let obj = JSON.parse(newVal)
   Object.assign(info, obj)
@@ -177,6 +190,13 @@ watch(()=>sessionStorage.getItem('courseInfo'), async(newVal)=>{
     let imgBase64 = 'data:image/jpeg;base64,' + data
     // let url = window.URL.createObjectURL(temp);
     info.cover = imgBase64
+    })
+    zip.file(zipName).async('blob').then((zipfile) => {
+      console.log('zipfile', zipfile.files)
+      const fileZip = new Blob([zipfile], { type: 'application/zip' })
+      
+      downloadHref.value = URL.createObjectURL(fileZip)
+
     })
 })
 }
@@ -205,7 +225,6 @@ const handlePostMessage = async()=>{
       courseId: info.courseId,
       commentPrivilege: store.isTeacher ? 'teacher' :'student'
     }
-    console.log('params is', params)
     const { code ,data} = await createComment(params)
     if(code == 0){
       ElMessage.success('评论成功！')
@@ -228,7 +247,6 @@ const handleAddReply = async(commentId)=>{
       commentPrivilege: 'teacher',
       commentId
     }
-    console.log('params is', params)
     const { code ,data} = await createReply(params)
     if(code == 0){
       ElMessage.success('回复成功！')

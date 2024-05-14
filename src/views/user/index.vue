@@ -20,35 +20,38 @@
           </el-carousel>
         </div>
         <div class="user-info">
-         <template v-if="store.isTeacher">
-          <el-image  style="width: 32px; height:32px" :src="getAssetsFile('img/老师头像.png')"></el-image>
-            <span class="ml-4">{{ store.info.username }}</span>
-         </template>
-         <template v-if="store.isStudent">
-          <div class="user-info-item">
-            <el-image v-if="store.isTeacher" style="width: 32px; height:32px" :src="getAssetsFile('img/老师头像.png')"></el-image>
-            <el-image  style="width: 32px; height:32px" :src="getAssetsFile('img/学生头像.png')"></el-image>
-            <span class="ml-4">{{ store.info.username }}</span>
-          </div>
-          <div class="user-info-item">
-            正在学习:
-          </div>
-          <div class="user-info-item">
-            <div class="course-learning-now ">
-              <div class="course-learning-now-item" v-for="item in learningNow">
-                {{ item }}</div>
+          <template v-if="store.isTeacher">
+            <div class="mb-4"> <el-image style="width: 32px; height:32px"
+                :src="getAssetsFile('img/老师头像.png')"></el-image>
+              <span class="ml-4">{{ store.info.username }}</span>
             </div>
-          </div>
-          <div class="user-info-item mt-14 justify-center">
-            <el-button type="primary">继续学习</el-button>
-          </div>
-         </template>
+            <div class="user-info-item">职称:{{ teacherInfo.level }}</div>
+            <div class="user-info-item">专业领域:{{ teacherInfo.major }}</div>
+            <div class="user-info-item">教学经验:{{ teacherInfo.experirence }}</div>
+          </template>
+          <template v-if="store.isStudent">
+            <div class="user-info-item">
+              <el-image v-if="store.isTeacher" style="width: 32px; height:32px"
+                :src="getAssetsFile('img/老师头像.png')"></el-image>
+              <el-image style="width: 32px; height:32px" :src="getAssetsFile('img/学生头像.png')"></el-image>
+              <span class="ml-4">{{ store.info.username }}</span>
+            </div>
+            <div class="user-info-item">
+              正在学习:
+            </div>
+            <div class="user-info-item">
+              <div class="course-learning-now ">
+                <div class="course-learning-now-item" v-for="item in learningNow">
+                  {{ item }}</div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
       <div class="notice-area">
         <div class="title">通知中心</div>
         <div class="notice-list-wrap">
-          <el-card style="max-width: 300px" v-for="(item, index) in noticeList">
+          <el-card style="max-width: 300px" v-for="(item, index) in noticeList.slice(0, 3)">
             <template #header>
               <div class="card-header">
                 <span>{{ item.title }}</span>
@@ -57,7 +60,7 @@
             <el-tooltip placement="right" effect="light">
               <div class="card-content"> {{ item.content }}</div>
               <template #content>
-               <div class="tooltip-notice"> {{ item.content }}</div>
+                <div class="tooltip-notice"> {{ item.content }}</div>
               </template>
             </el-tooltip>
             <template #footer>
@@ -76,8 +79,8 @@
 <script setup>
 import { getAssetsFile } from "@/util/utils.js";
 import { useUserStore } from '@/store/user'
-import { getNoticeList, getSCByStudentId} from "@/api/index";
-import { onMounted, ref } from 'vue'
+import { getNoticeList, getSCByStudentId, getTeacherById } from "@/api/index";
+import { onMounted, reactive, ref } from 'vue'
 
 
 const store = useUserStore()
@@ -137,26 +140,25 @@ const getTableData = async () => {
 };
 
 const learningNow = ref([])
-const getScStudentId = async()=>{
-  const {data,code } = await getSCByStudentId({studentId:store.info.userId})
-  learningNow.value = data.map(i=>i.courseName)
- }
+const getScStudentId = async () => {
+  const { data, code } = await getSCByStudentId({ studentId: store.info.userId })
+  learningNow.value = data.map(i => i.courseName)
+}
 
-onMounted(async() => {
+onMounted(async () => {
   // try{
-    await getScStudentId()
-    const {code,data } = await getCourseList(params)
-    courseInfo.value = data.list
-    courseInfo.value.forEach(item=>{
-      item.isSelected = selectedCourseId.value.includes(item.courseId)
-    })
-   
-}) 
-
-
-onMounted(() => {
+  await getScStudentId()
   getTableData();
-});
+  getTeacherInfo()
+})
+
+const teacherInfo = reactive({})
+const getTeacherInfo = async () => {
+  if (store.isTeacher) {
+    const { data, code } = await getTeacherById(store.info.userId)
+    Object.assign(teacherInfo, data)
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -285,7 +287,8 @@ onMounted(() => {
     gap: 12px;
   }
 }
-.tooltip-notice{
+
+.tooltip-notice {
   color: $text-plain-color;
   width: 280px;
 }

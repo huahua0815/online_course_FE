@@ -1,9 +1,10 @@
 <template>
  <div class="manage-wrap">
-  <div class="teacher-operation"><el-button type="primary" :icon="Plus" @click="dialogVisible = true">新增课程</el-button></div>
+  <div v-if="store.isTeacher" style="font-size: 18px;color:#409eff">我的课程</div>
+  <!-- <div class="teacher-operation"><el-button type="primary" :icon="Plus" @click="dialogVisible = true">新增课程</el-button></div> -->
   <el-table :data="courseInfo" >
     <el-table-column prop="courseName" label="课程名" min-width="140" />
-    <el-table-column prop="teacher" label="讲师" min-width="80" />
+    <el-table-column prop="teacherName" label="讲师" min-width="80" />
     <el-table-column prop="introduction" label="简介" min-width="300" />
     <el-table-column prop="courseExamFrame" label="考试大纲" min-width="240" />
     <el-table-column prop="courseStartTime" label="创建时间" min-width="120" />
@@ -11,9 +12,16 @@
     <el-table-column prop="courseExamDate" label="考试时间" min-width="120" />
     <el-table-column prop="courseSelectedCount" label="选课学生人数" />
     <el-table-column prop="" label="操作" width="360" fixed="right">
-      <el-button type="danger" >删除</el-button>
-      <el-button type="warning" >更改</el-button>
-      <el-button type="info" >详情</el-button>
+    <template #default="scope">
+      <el-popconfirm title="确认删除这个课程?" @confirm="handleDelete(scope.row)">
+              <template #reference>
+                <el-button type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
+     
+      <el-button type="warning" @click="goCourseUpdate(scope.row)">更改</el-button>
+      <el-button type="info" @click="goCourseDetail(scope.row)">详情</el-button>
+    </template>
     </el-table-column>
   </el-table>
  </div>
@@ -24,8 +32,13 @@ import { ref,reactive, onMounted } from 'vue'
 import {
  Plus
 } from '@element-plus/icons-vue'
-import { getCourseList } from "@/api/index";
+import { getCourseList,deleteCourse } from "@/api/index";
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus';
+import { useUserStore } from '@/store/user'
 
+const store = useUserStore()
+const router = useRouter()
 const dialogVisible = ref(false)
 const formData = reactive({
   name:'',
@@ -83,27 +96,6 @@ const courseInfo = ref([
     timeSpan: "12周",
     studentNum: 40,
   },
-  {
-    cover: "course8.jpg",
-    name: "计算机图形学",
-    teacher: "刘博",
-    timeSpan: "10周",
-    studentNum: 30,
-  },
-  {
-    cover: "course9.jpg",
-    name: "操作系统原理",
-    teacher: "王刚",
-    timeSpan: "10周",
-    studentNum: 50,
-  },
-  {
-    cover: "course10.jpg",
-    name: "云计算与大数据",
-    teacher: "赵丽",
-    timeSpan: "8周",
-    studentNum: 55,
-  },
 ]);
 
 const params = {
@@ -112,15 +104,43 @@ const params = {
     "pageSize": 100,
   },
 }
-onMounted(async() => {
+const getCourse = async() => {
   try{
     const {code,data } = await getCourseList(params)
     courseInfo.value = data.list
+    if(store.isTeacher){
+      courseInfo.value = data.list.filter(item => item.courseTeacherId == store.info.userId)
+    }
   }catch(e){
     ElMessage.error('获取课程列表失败!')
   }
+}
+
+onMounted(()=>{
+  getCourse()
 });
 
+const goCourseDetail = (item)=>{
+  router.push('/course/detail')
+  sessionStorage.setItem("courseInfo", JSON.stringify(item));
+}
+
+const goCourseUpdate = (item)=>{
+  router.push('/course/create-course')
+  sessionStorage.setItem("courseUpdateInfo", JSON.stringify(item));
+}
+
+const handleDelete = (row) => {
+  try{
+    const { code } = deleteCourse({courseId:row.courseId})
+    if(code == 0 ){
+      ElMessage.success('删除课程成功！')
+      getCourse()
+    }
+  }catch(e){
+    ElMessage.error(e)
+  }
+}
 </script>
 
 <style scoped>
@@ -129,7 +149,7 @@ onMounted(async() => {
   justify-content: flex-end;
 }
 .manage-wrap{
-  width: 920px;
+  width: 1160px;
   border-radius: 8px;
   padding: 16px;
   margin: 12px auto;

@@ -14,12 +14,11 @@
       <el-menu-item index="/notice">通知中心</el-menu-item>
       <el-sub-menu index="3">
         <template #title>个人中心</template>
-        <el-menu-item index="3-1" >我的课程</el-menu-item>
+        <el-menu-item index="/course/manage" >我的课程</el-menu-item>
         <el-menu-item index="3-2">我的回复</el-menu-item>
         <el-menu-item index="3-3">我发布的考试</el-menu-item>
         <el-menu-item index="3-4">我发布的作业</el-menu-item>
         <el-menu-item index="3-5">我发布的通知</el-menu-item>
-        <el-menu-item index="3-6">个人资料</el-menu-item>
         <el-menu-item index="/login">退出登录</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/login">后台中心</el-menu-item>

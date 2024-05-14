@@ -35,8 +35,9 @@
           <div class="welcome">
             <p> 欢迎注册<span style="color:#315BF4">在线课程系统</span> 🎉</p>
           </div>
-          <el-form :label-width="58" :model="regFormData">
-            <el-form-item label="工号">
+          <el-form :label-width="80" :model="regFormData">
+            <template v-if="regFormData.userType==1">
+              <el-form-item label="学生工号">
               <el-input v-model="regFormData.number" />
             </el-form-item>
             <el-form-item label="用户名">
@@ -45,6 +46,30 @@
             <el-form-item label="密码">
               <el-input v-model="regFormData.password" />
             </el-form-item>
+            </template>
+            <template v-else>
+              <el-form-item label="教师工号">
+              <el-input v-model="teacherFormData.teacherNumber" />
+            </el-form-item>
+            <el-form-item label="教师姓名">
+              <el-input v-model="teacherFormData.teacherName" />
+            </el-form-item>
+            <el-form-item label="教师密码">
+              <el-input v-model="teacherFormData.teacherPassword" />
+            </el-form-item>
+            <el-form-item label="个人简介">
+              <el-input v-model="teacherFormData.introduction" />
+            </el-form-item>
+            <el-form-item label="教学经验">
+              <el-input v-model="teacherFormData.experirence" />
+            </el-form-item>
+            <el-form-item label="专业领域">
+              <el-input v-model="teacherFormData.major" />
+            </el-form-item> 
+             <el-form-item label="职称">
+              <el-input v-model="teacherFormData.level" />
+            </el-form-item>
+            </template>
             <el-form-item label="角色">
               <el-radio-group v-model="regFormData.userType">
                 <el-radio-button label="学生" value="1" />
@@ -71,7 +96,7 @@ import { getAssetsFile } from '@/util/utils.js'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus';
 import { useUserStore } from '@/store/user'
-import { login,register } from '@/api/index.js'
+import { login,register,createTeacher } from '@/api/index.js'
 import _ from 'lodash'
 
 
@@ -83,6 +108,10 @@ const formData = reactive({
   username: '',
   password: '',
   userType:1,
+  number:'',
+  password:'',
+  userType:1,
+  username:''
 })
 
 const regFormData = reactive({
@@ -90,6 +119,16 @@ const regFormData = reactive({
   password:'',
   userType:1,
   username:''
+})
+
+const teacherFormData = reactive({
+  teacherNumber:-1,
+  teacherName:'',
+  teacherPassword:'',
+  major:'',
+  experirence:'',
+  introduction:'',
+  level:''
 })
 const m = {
   1: { route: '/user' },
@@ -124,15 +163,28 @@ const handleReg = () => {
 }
 
 const handleRegister = async() => {
-  try{
+  if(regFormData.userType == 1){
+    try{
     const {code} = await register(regFormData)
     if(code == 0){
-      ElMessage.success('注册成功！')
+      ElMessage.success('学生注册成功！')
       isLogin.value = true  
     }
   }catch(e){
 
   }
+  }else{
+    try{
+    const {code} = await createTeacher(teacherFormData)
+    if(code == 0){
+      ElMessage.success('老师注册成功！')
+      isLogin.value = true  
+    }
+  }catch(e){
+
+  }
+  }
+ 
 }
 </script>
 
@@ -158,7 +210,7 @@ const handleRegister = async() => {
 
     .login-box, .register-box {
       position: relative;
-      width: 320px;
+      width: 380px;
       height: 360px;
       box-sizing: border-box;
       padding: 34px;
@@ -168,7 +220,10 @@ const handleRegister = async() => {
       box-shadow: 2px 4px 14px 5px rgba(0, 0, 0, 0.08);
     }
     .register-box{
-      height: 400px;
+      height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
   }
 }
