@@ -81,7 +81,7 @@
                   <div class="message-ask-right-name">{{ item.comment.commentUserName }}</div>
                   <div class="message-ask-right-word">{{ item.comment.comment }}</div>
                   <div class="message-ask-right-createtime">
-                    {{ item.commentTm }}
+                    {{ item.comment.commentTm }}
                   </div>
                 </div>
               </div>
@@ -93,7 +93,7 @@
                   <div class="message-answer-right-name">{{ reply.commentUserName }}</div>
                   <div class="message-answer-right-word">{{ reply.comment }}</div>
                   <div class="message-answer-right-createtime">
-                    {{ item.replyTm }}
+                    {{ reply.replyTm }}
                   </div>
                 </div>
               </div>
@@ -103,7 +103,9 @@
         <el-tab-pane label="课程作业" name="homework">
           <div class="panel-wrap">
             <div class="homework-item" v-for="(item, index) in homeworkList">
-            <el-button @click="handleGoHomeworkDetail(index)" link type="primary">{{ item.name }}</el-button></div>
+              <div class="homework-item-name"> 作业名称：{{ item.name }}</div>
+              <div class="homework-item-status ml-3" v-if="item.homeworkScore != -1"> 已完成，分数为：{{ item.homeworkScore }}</div>
+              <el-button  class="ml-2" v-if="item.homeworkScore == -1" @click="handleGoHomeworkDetail(index)" link type="primary">去完成作业</el-button></div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -154,14 +156,29 @@ const info = reactive({
   cover:''
  });
 
+
+ const scList = ref([])
  const getScStudentId = async()=>{
   const {data,code } = await getSCByStudentId({studentId:store.info.userId})
+  scList.value = data
  }
 
  const homeworkList = ref([])
  const getHomeworkAll = async()=>{
   const {data,code } = await getHomeworkList({courseId:info.courseId})
   homeworkList.value = data
+  let homeworkScore = scList.value.find(i=>i.scCourseId == info.courseId)
+  console.log('homeworkScore', homeworkScore)
+  if(homeworkScore && homeworkScore.scHomeScores){
+    homeworkList.value.forEach((i,index)=>{
+      i.homeworkScore = homeworkScore.scHomeScores.split(',')[index]
+    })
+  }else{
+    homeworkList.value.forEach((i,index)=>{
+      i.homeworkScore = -1
+    })
+  }
+  console.log('homeworkList',homeworkList.value)
  }
 
  onMounted(()=>{
@@ -282,6 +299,8 @@ const getCommentInfo = async()=>{
 
 const handleGoHomeworkDetail =(index)=>{
   sessionStorage.setItem('homework', JSON.stringify(homeworkList.value[index]))
+  sessionStorage.setItem('homeworkIndex', index)
+  sessionStorage.setItem('homeworkList', JSON.stringify(homeworkList.value))
   router.push('/homework-detail')
 }
 </script>
@@ -384,5 +403,10 @@ const handleGoHomeworkDetail =(index)=>{
 
 display: flex;
 justify-content: flex-end;
+}
+.homework-item{
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
 }
 </style>

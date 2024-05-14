@@ -14,9 +14,8 @@
       <el-sub-menu index="3">
         <template #title>个人中心</template>
         <el-menu-item index="/course/mylist" >我的课程</el-menu-item>
-        <el-menu-item index="3-2">我的留言</el-menu-item>
-        <el-menu-item index="3-3">我的考试</el-menu-item>
-        <el-menu-item index="3-4">我的作业</el-menu-item>
+        <el-menu-item index="/discuss-my">我的留言</el-menu-item>
+        <el-menu-item index="/exam/mylist">我的考试</el-menu-item>
         <el-menu-item index="3-5">我的学习进度</el-menu-item>
         <el-menu-item index="/login">退出登录</el-menu-item>
       </el-sub-menu>

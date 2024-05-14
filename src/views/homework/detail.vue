@@ -16,8 +16,8 @@
     <div>
       总分：{{ examTypeCount[0]["总分"] }}分
     </div>
-    <div>
-      <el-button class="text-center mt-4" type="primary">提交作业</el-button>
+    <div class="text-center">
+      <el-button class=" mt-4" type="primary"  @click="handleSubmit">提交作业</el-button>
     </div>
    </div>
   <div class="exam-area">
@@ -44,50 +44,121 @@
         </el-radio-group>
       </div>
       <div class="question-input" v-else>
-        <el-input type="textarea" placeholder="请输入你的回答" :rows="5"></el-input>
+        <el-input type="textarea" v-model="answer[index]" placeholder="请输入你的回答" :rows="5"></el-input>
       </div>
     </div>
   </div>
+  <el-dialog v-model="scoreDialogVisible" width="400">
+    <div class="score-wrap">
+      <div>恭喜完成作业🎉，您的作业得分为 <span style="color:#409eff"> {{ finalScore }} </span> 分</div>
+      <div>正确率为 {{ rightRate }}</div>
+      <div>正确答案如下：</div>
+      <div class="right-answer-item" v-for="item, index in rightAnswer" :key="index">
+      {{ index+1 }}、{{ item }}</div>
+      <el-button class="mt-4" type="primary" @click="handleConfirm">确认</el-button>
+ 
+    </div>
+    </el-dialog>
   </div>
   </div>
   </template>
   
   <script setup>
   import { reactive, ref,watch } from 'vue'
-  import { useRoute } from 'vue-router';
-  
-  const route = useRoute()
+  import { useRouter } from 'vue-router';
+  import { useUserStore } from '@/store/user'
+  import { ElMessage } from 'element-plus';
+  import { getSCByStudentId, updateSC } from '@/api/index'
+import { jsx } from 'vue/jsx-runtime';
+
+  const store = useUserStore()
+  const router = useRouter()
   const info = reactive({})
   const content = ref([])
   
-  const answer = ref([])
+  const params = reactive({
+  examId:-1,
+  scCourseId: -1,
+  scExamScore: 0,
+  scId : -1,
+  scStudentId: -1,
+  scHomeScores: []
+})
+const answer = ref([])
+const rightAnswer = ref([])
+const examTypeCount = [{"总题数":0,"总分":0,"判断题":0,"单选题":0,"问答题":0}]
+const scoreDialogVisible = ref(false)
+const activeIndex = ref(0)
+
+
+const getScInfo = async()=>{
+  const {data} = await getSCByStudentId({studentId: store.info.userId})
+  let obj = data.find(item=>item.scCourseId == params.scCourseId)
+  console.log('in homework detail sc is', obj)
+  if(obj){
+    params.scId = obj.scId
+    params.scHomeScores = obj.scHomeScores || [] 
+  }
+}
+watch(()=>sessionStorage.getItem('homework'), (newVal)=>{
+  let obj = JSON.parse(newVal)
+  Object.assign(info, obj)
+  content.value = JSON.parse(obj.content)
+  answer.value = Array.from({length: content.value.length}, () => '')
+  rightAnswer.value = content.value.map(item => item.answer)
   
-  const examTypeCount = [{"总题数":0,"总分":0,"判断题":0,"单选题":0,"问答题":0}]
-  watch(()=>sessionStorage.getItem('homework'), (newVal)=>{
-    let obj = JSON.parse(newVal)
-    Object.assign(info, obj)
-    console.log('info ',info)
-    content.value = JSON.parse(obj.content)
-    answer.value = Array.from({length: content.value.length}, () => '')
-    content.value.forEach((item, index)=>{
-      if(item.type == '判断题'){
-        examTypeCount[0]["判断题"] += 1
-      }
-      if(item.type == '单选题'){
-        examTypeCount[0]["单选题"] += 1
-      }
-      if(item.type == '问答题'){
-        examTypeCount[0]["问答题"] += 1
-      }
-      examTypeCount[0]["总题数"] += 1
-      examTypeCount[0]["总分"] += Number(item.score)
-    })
-    console.log('content ',content.value, answer.value)
-  },{
-    deep:true,immediate: true
+  params.examId = obj.examId
+  params.scCourseId = obj.courseId
+  params.scStudentId = store.info.userId
+  content.value.forEach((item, index)=>{
+    if(item.type == '判断题'){
+      examTypeCount[0]["判断题"] += 1
+    }
+    if(item.type == '单选题'){
+      examTypeCount[0]["单选题"] += 1
+    }
+    if(item.type == '问答题'){
+      examTypeCount[0]["问答题"] += 1
+    }
+    examTypeCount[0]["总题数"] += 1
+    examTypeCount[0]["总分"] += Number(item.score)
   })
+
+  getScInfo()
+},{
+  deep:true,immediate: true
+})
   
-  
+ 
+const finalScore = ref(0)
+const rightRate = ref('')
+const handleSubmit = async()=>{
+  content.value.forEach((item, index)=>{
+    if(item.answer == answer.value[index]){
+      finalScore.value += Number(item.score)
+    }
+  })
+  scoreDialogVisible.value = true
+  rightRate.value = (finalScore.value/examTypeCount[0]["总分"]*100).toFixed(2) + '%'
+  try{
+   
+     let curScore = Math.ceil(finalScore.value/examTypeCount[0]["总分"]*100)
+     let len = JSON.parse(sessionStorage.getItem('homeworkList')).length
+     let arr = Array.from({length: len}, () => -1)
+     arr[activeIndex.value] = curScore
+     params.scHomeScores = arr.join(',')
+    const { code } = await updateSC(params)
+    if(code == 0){
+      ElMessage.success('提交作业成绩成功！')
+    }
+  }catch(e){
+    ElMessage.error(e)
+  }
+}
+const handleConfirm = ()=>{
+  scoreDialogVisible.value = false
+  router.push('/course/list')
+} 
   </script>
   
   <style scoped lang="scss">

@@ -5,12 +5,6 @@
       <el-table-column prop="content" label="留言内容" min-width="300" />
       <el-table-column prop="creator" label="发布者" width="180" />
       <el-table-column prop="createtime" label="发布时间" width="180" />
-
-      <el-table-column prop="" label="操作" width="300">
-        <el-button type="danger">删除</el-button>
-        <el-button type="warning">更改</el-button>
-        <el-button type="info">详情</el-button>
-      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -41,9 +35,9 @@ const getComment = async () => {
         tableData.value.push(
       {
         type: '回复',
-        content: item.comment,
-        createtime: item.replyTm,
-        creator: item.commentUserName
+        content: reply.comment,
+        createtime: reply.replyTm,
+        creator: reply.commentUserName
       }
     )
       })

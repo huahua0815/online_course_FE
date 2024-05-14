@@ -120,6 +120,11 @@ const router = createRouter({
           component: () => import('@/views/discuss/index.vue')
         },
         {
+          path: '/discuss-my',
+          name: 'MyDisucss',
+          component: () => import('@/views/discuss/my.vue')
+        },
+        {
           path: '/user',
           name:'UserIndex',
           component: () => import('@/views/user/index.vue')

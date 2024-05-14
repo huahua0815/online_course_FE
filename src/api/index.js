@@ -17,12 +17,13 @@ export const deleteCourse = (params) => requests({ url: '/course/delete', method
 //选课关系
 export const addSC = (data) => requests({ url: '/selectCourse/add', data, method: 'post' })
 export const getSCByStudentId = (params) => requests({ url: '/selectCourse/getCourseListByStudentId', method: 'get', params} )
+export const updateSC = (data) => requests({ url: '/selectCourse/update', data, method: 'post' })
 
 //留言
 export const createComment = (data) => requests({ url: '/comment/addComment', data, method: 'post' })
 export const createReply = (data) => requests({ url: '/comment/addReply', data, method: 'post' })
 export const getCommentList = (params) => requests({ url: '/comment/getComment', method: 'get', params} )
-
+export const getCommentById =  (params) => requests({ url: '/comment/getCommentByUserId', method: 'get', params} )
 
 //考试
 export const addExam = (data) => requests({ url: '/exam/add', data, method: 'post' })

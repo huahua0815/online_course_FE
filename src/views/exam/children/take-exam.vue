@@ -16,8 +16,15 @@
   <div>
     总分：{{ examTypeCount[0]["总分"] }}分
   </div>
-  <div>
-    <el-button class="text-center mt-4" type="primary">提交试卷</el-button>
+  <div style="font-size: 12px; color:#666" class="exam-rule mt-6">
+    <p> 各位考生，请注意！本次考试是对你们知识和能力的检验，必须秉持诚信原则进行。</p>
+    <p> 任何形式的作弊行为都是不被允许的，这不仅违反了考试纪律，更是对自己和他人的不尊重。</p>
+    <p> 我们将严格监督考场秩序，一旦发现作弊行为，将按照规定予以严肃处理，包括取消考试成绩、记录档案等。</p>
+    <p> 请大家自觉遵守考试规则，以真实的水平展现自己的实力，共同维护考试的公平与公正。</p>
+    <p>希望大家认真答题，考出自己的真实水平，祝大家考试顺利！</p>
+</div>
+  <div class="text-center mt-4">
+    <el-button class="text-center mt-4" type="primary" @click="handleSubmit">提交试卷</el-button>
   </div>
  </div>
 <div class="exam-area">
@@ -44,9 +51,20 @@
       </el-radio-group>
     </div>
     <div class="question-input" v-else>
-      <el-input type="textarea" placeholder="请输入你的回答" :rows="5"></el-input>
+      <el-input type="textarea" v-model="answer[index]" placeholder="请输入你的回答" :rows="5"></el-input>
     </div>
   </div>
+  <el-dialog v-model="scoreDialogVisible" width="400">
+    <div class="score-wrap">
+      <div>恭喜完成考试🎉，您的考试得分为 <span style="color:#409eff"> {{ finalScore }} </span> 分</div>
+      <div>正确率为 {{ rightRate }}</div>
+      <div>正确答案如下：</div>
+      <div class="right-answer-item" v-for="item, index in rightAnswer" :key="index">
+      {{ index+1 }}、{{ item }}</div>
+      <el-button class="mt-4" type="primary" @click="handleConfirm">确认</el-button>
+ 
+    </div>
+    </el-dialog>
 </div>
 </div>
 </div>
@@ -54,21 +72,48 @@
 
 <script setup>
 import { reactive, ref,watch } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+import _ from 'lodash'
+import { ElMessage } from 'element-plus';
+import { getSCByStudentId, updateSC } from '@/api/index'
+import { useUserStore } from '@/store/user'
 
-const route = useRoute()
+const router = useRouter()
 const info = reactive({})
 const content = ref([])
+const store = useUserStore()
 
+const params = reactive({
+  examId:-1,
+  scCourseId: -1,
+  scExamScore: 0,
+  examStatus: 0,
+  scId : -1,
+  scStudentId: -1
+})
 const answer = ref([])
-
+const rightAnswer = ref([])
 const examTypeCount = [{"总题数":0,"总分":0,"判断题":0,"单选题":0,"问答题":0}]
+const scoreDialogVisible = ref(false)
+
+const getScInfo = async()=>{
+  const {data} = await getSCByStudentId({studentId: store.info.userId})
+  let obj = data.find(item=>item.scCourseId == params.scCourseId)
+  if(obj){
+    params.scId = obj.scId
+  }
+}
+
 watch(()=>sessionStorage.getItem('exam'), (newVal)=>{
   let obj = JSON.parse(newVal)
   Object.assign(info, obj)
-  console.log('info ',info)
   content.value = JSON.parse(obj.content)
   answer.value = Array.from({length: content.value.length}, () => '')
+  rightAnswer.value = content.value.map(item => item.answer)
+  
+  params.examId = obj.examId
+  params.scCourseId = obj.courseId
+  params.scStudentId = store.info.userId
   content.value.forEach((item, index)=>{
     if(item.type == '判断题'){
       examTypeCount[0]["判断题"] += 1
@@ -82,12 +127,38 @@ watch(()=>sessionStorage.getItem('exam'), (newVal)=>{
     examTypeCount[0]["总题数"] += 1
     examTypeCount[0]["总分"] += Number(item.score)
   })
-  console.log('content ',content.value, answer.value)
+
+  getScInfo()
 },{
   deep:true,immediate: true
 })
 
 
+const finalScore = ref(0)
+const rightRate = ref('')
+const handleSubmit = async()=>{
+  content.value.forEach((item, index)=>{
+    if(item.answer == answer.value[index]){
+      finalScore.value += Number(item.score)
+    }
+  })
+  scoreDialogVisible.value = true
+  rightRate.value = (finalScore.value/examTypeCount[0]["总分"]*100).toFixed(2) + '%'
+  try{
+    params.examStatus = 1
+    params.scExamScore = Math.ceil(finalScore.value/examTypeCount[0]["总分"]*100)
+    const { code } = await updateSC(params)
+    if(code == 0){
+      ElMessage.success('提交考试成绩成功！')
+    }
+  }catch(e){
+    ElMessage.error(e)
+  }
+}
+const handleConfirm = ()=>{
+  scoreDialogVisible.value = false
+  router.push('/course/list')
+}
 </script>
 
 <style scoped lang="scss">
@@ -144,5 +215,14 @@ watch(()=>sessionStorage.getItem('exam'), (newVal)=>{
   font-size: 0;
   flex-direction: column;
   align-items: flex-start;
+}
+.exam-rule p{
+  padding: 4px 0;
+  text-indent: 1em;
+}
+.score-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
