@@ -82,7 +82,7 @@ import { jsx } from 'vue/jsx-runtime';
   scExamScore: 0,
   scId : -1,
   scStudentId: -1,
-  scHomeScores: []
+  scHomeScores: {}
 })
 const answer = ref([])
 const rightAnswer = ref([])
@@ -90,17 +90,17 @@ const examTypeCount = [{"总题数":0,"总分":0,"判断题":0,"单选题":0,"�
 const scoreDialogVisible = ref(false)
 const activeIndex = ref(0)
 
-
+const curHomeworkInfo = reactive({})
 const getScInfo = async()=>{
   const {data} = await getSCByStudentId({studentId: store.info.userId})
   let obj = data.find(item=>item.scCourseId == params.scCourseId)
-  console.log('in homework detail sc is', obj)
   if(obj){
     params.scId = obj.scId
-    params.scHomeScores = obj.scHomeScores || [] 
+    params.scHomeScores = JSON.parse(obj.scHomeScores) || {}
   }
 }
 watch(()=>sessionStorage.getItem('homework'), (newVal)=>{
+  getScInfo()
   let obj = JSON.parse(newVal)
   Object.assign(info, obj)
   content.value = JSON.parse(obj.content)
@@ -123,8 +123,6 @@ watch(()=>sessionStorage.getItem('homework'), (newVal)=>{
     examTypeCount[0]["总题数"] += 1
     examTypeCount[0]["总分"] += Number(item.score)
   })
-
-  getScInfo()
 },{
   deep:true,immediate: true
 })
@@ -140,20 +138,16 @@ const handleSubmit = async()=>{
   })
   scoreDialogVisible.value = true
   rightRate.value = (finalScore.value/examTypeCount[0]["总分"]*100).toFixed(2) + '%'
-  try{
-   
      let curScore = Math.ceil(finalScore.value/examTypeCount[0]["总分"]*100)
-     let len = JSON.parse(sessionStorage.getItem('homeworkList')).length
-     let arr = Array.from({length: len}, () => -1)
-     arr[activeIndex.value] = curScore
-     params.scHomeScores = arr.join(',')
+     params.scHomeScores[info.homeworkId] = curScore
+     params.scHomeScores = JSON.stringify(params.scHomeScores)
     const { code } = await updateSC(params)
     if(code == 0){
       ElMessage.success('提交作业成绩成功！')
     }
-  }catch(e){
-    ElMessage.error(e)
-  }
+  // }catch(e){
+  //   ElMessage.error(e)
+  // }
 }
 const handleConfirm = ()=>{
   scoreDialogVisible.value = false

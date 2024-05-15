@@ -122,7 +122,7 @@ const regFormData = reactive({
 })
 
 const teacherFormData = reactive({
-  teacherNumber:-1,
+  teacherNumber:'',
   teacherName:'',
   teacherPassword:'',
   major:'',

@@ -5,8 +5,13 @@ export const login = (data) => requests({ url: '/user/login', data, method: 'pos
 export const register  = (data) => requests({ url: '/user/signUp', data, method: 'post' })
 export const getUserList = (params) => requests({ url: '/user/getUserList', params, method: 'get' })
 
+//学生管理
+export const deleteStudent = (id) => requests({ url: `/admin/student/${id}`, method: 'delete' })
+
 export const createTeacher = (data)=>requests({ url: '/admin/teacher', data, method: 'post' })
 export const getTeacherById = (id) => requests({ url: `/admin/teacher/${id}`, method: 'get' })
+export const deleteTeacher = (id) => requests({ url: `/admin/teacher/${id}`, method: 'delete' })
+export const updateTeacher = (data) => requests({ url: '/admin/teacher/update', data, method: 'post' })
 
 export const createCourse = (data) => requests({ url: '/course/add', data, method: 'post' })
 export const getCourseList = (data) => requests({ url: '/course/getMainPage', method: 'post', data} )
@@ -31,6 +36,8 @@ export const deleteExam = (params) => requests({ url: '/exam/delete', params, me
 export const updateExam = (data) => requests({ url: '/exam/update', data, method: 'post' })
 export const getExamList = (data) => requests({ url: '/exam/getExamMainPage', method: 'post', data} )
 export const getExamByStudentId = (params) => requests({ url: '/exam/getExamListByStudentId', method: 'get', params} )
+export const getExamByTeacherId = (params) => requests({ url: '/exam/getExamListByTeacherId', method: 'get', params} )
+
 //通知
 export const addNotice = (data) => requests({ url: '/notice/add', data, method: 'post' })
 export const deleteNotice = (params) => requests({ url: '/notice/delete', method: 'get', params })

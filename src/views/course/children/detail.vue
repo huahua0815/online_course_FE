@@ -61,7 +61,7 @@
                 <span>课程文件</span>
               </div>
               <div class="detail-intro-item-content">
-                <a style="color: #409eff;" class="pl-4" :href="downloadHref" :download="`${info.courseName}.zip`">
+                <a  v-if="downloadHref" style="color: #409eff;" class="pl-4" :href="downloadHref" :download="`${info.courseName}.zip`">
                   点这里下载
                 </a>
               
@@ -103,9 +103,11 @@
         <el-tab-pane label="课程作业" name="homework">
           <div class="panel-wrap">
             <div class="homework-item" v-for="(item, index) in homeworkList">
-              <div class="homework-item-name"> 作业名称：{{ item.name }}</div>
-              <div class="homework-item-status ml-3" v-if="item.homeworkScore != -1"> 已完成，分数为：{{ item.homeworkScore }}</div>
-              <el-button  class="ml-2" v-if="item.homeworkScore == -1" @click="handleGoHomeworkDetail(index)" link type="primary">去完成作业</el-button></div>
+              <div class="homework-item-name"> 
+                <span style="color:#666">作业名称：</span>
+                 {{ item.name }}</div>
+              <div v-if="item.homeworkScore != -1" class="homework-item-status ml-3" > 已完成，分数为：{{ item.homeworkScore }}</div>
+              <el-button class="ml-3" v-else  @click="handleGoHomeworkDetail(index)"  type="primary">去完成作业</el-button></div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -139,6 +141,7 @@ import JSZip from 'jszip'
 import { useUserStore } from '@/store/user'
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import _ from 'lodash'
 
 const router = useRouter()
 const store = useUserStore()
@@ -167,18 +170,18 @@ const info = reactive({
  const getHomeworkAll = async()=>{
   const {data,code } = await getHomeworkList({courseId:info.courseId})
   homeworkList.value = data
-  let homeworkScore = scList.value.find(i=>i.scCourseId == info.courseId)
-  console.log('homeworkScore', homeworkScore)
-  if(homeworkScore && homeworkScore.scHomeScores){
+  let scCur = scList.value.find(i=>i.scCourseId == info.courseId)
+  if(scCur && scCur.scHomeScores){
+    let homeScores = JSON.parse(scCur.scHomeScores)
+    console.log('honmeScores',homeScores)
     homeworkList.value.forEach((i,index)=>{
-      i.homeworkScore = homeworkScore.scHomeScores.split(',')[index]
+      i.homeworkScore = homeScores[i.homeworkId] || -1
     })
   }else{
     homeworkList.value.forEach((i,index)=>{
       i.homeworkScore = -1
     })
   }
-  console.log('homeworkList',homeworkList.value)
  }
 
  onMounted(()=>{
@@ -194,7 +197,6 @@ watch(()=>sessionStorage.getItem('courseInfo'), async(newVal)=>{
   const response = await getCourseFileList([info.courseId])
     const zip = new JSZip()
     zip.loadAsync(response).then((res) => {
-	  console.log('111',res.files) // 每个file
     let zipName = '',imgName = ''
     for(let name of Object.keys(res.files)){
       if(name.endsWith('.zip')){
@@ -298,8 +300,9 @@ const getCommentInfo = async()=>{
 }
 
 const handleGoHomeworkDetail =(index)=>{
-  sessionStorage.setItem('homework', JSON.stringify(homeworkList.value[index]))
-  sessionStorage.setItem('homeworkIndex', index)
+  let curObj = _.cloneDeep(homeworkList.value[index])
+  console.log('curobh', curObj)
+  sessionStorage.setItem('homework', JSON.stringify(curObj))
   sessionStorage.setItem('homeworkList', JSON.stringify(homeworkList.value))
   router.push('/homework-detail')
 }
@@ -405,8 +408,9 @@ display: flex;
 justify-content: flex-end;
 }
 .homework-item{
-  display: flex;
-  align-items: center;
+  // display: flex;
+  // align-items: center;
   margin-bottom: 8px;
+  // flex-direction: column;
 }
 </style>

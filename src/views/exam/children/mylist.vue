@@ -2,7 +2,7 @@
 import { DArrowRight, Edit } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user'
-import { getExamByStudentId, getSCByStudentId } from '@/api/index'
+import { getExamByStudentId, getSCByStudentId,getExamByTeacherId } from '@/api/index'
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus';
 
@@ -23,13 +23,21 @@ onMounted(() => {
 const getList = async () => {
   try {
     await getScInfo()
-    const { data, code } = await getExamByStudentId({ studentId: store.info.userId })
-    console.log(data)
-    list.value = data
-    list.value.forEach(item => {
+    console.log(store.isTeacher)
+    if(store.isStudent){
+      const { data, code } = await getExamByStudentId({ studentId: store.info.userId })
+      list.value = data
+      list.value.forEach(item => {
       item.examInfo = scList.value.find(i => i.scCourseId == item.courseId)
-
     })
+    }
+    if(store.isTeacher){
+    const { data, code } = await getExamByTeacherId({ teacherId: store.info.userId })
+    list.value = data
+    }
+    console.log(data)
+    
+    
     console.log('list.value', list.value)
   } catch (e) {
     ElMessage.error('获取考试列表失败!')
@@ -45,7 +53,7 @@ const goTakeExam = (item) => {
 
 <template>
   <div class="exam-list-wrap">
-    <div style="font-size: 18px; margin-bottom: 16px; color: #409eff"> 我的考试</div>
+    <div style="font-size: 18px; margin-bottom: 16px; color: #409eff"> 我{{ store.isStudent ? '参加的' : '发布的' }}的考试</div>
     <div class="exam-list">
       <div class="exam-list-card" v-for="item, index in list" :key="index">
         <div class="name">{{ item.name }}</div>
@@ -58,11 +66,11 @@ const goTakeExam = (item) => {
         <div class="end-time">
           <span class="card-title">结束时间：</span>{{ item.endTime }}
         </div>
-        <div class="creator">
+        <!-- <div class="creator">
           <span class="card-title">发布者：</span>{{ item.creator }}
-        </div>
+        </div> -->
         <div class="operation flex justify-end">
-          <template v-if="item.examInfo.scExamScore">
+          <template v-if="store.isStudent && item.examInfo.examStatus">
             <div>考试分数为： {{ item.examInfo.scExamScore }}</div>
             <svg  
             style="width: 40px;height: 40px;"

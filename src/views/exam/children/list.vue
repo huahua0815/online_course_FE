@@ -51,8 +51,8 @@ const goTakeExam = (item)=>{
             <span class="card-title">开始时间：</span>{{ item.startTime }}</div>
          <div class="end-time">
             <span class="card-title">结束时间：</span>{{ item.endTime }}</div>
-        <div class="creator">
-            <span class="card-title">发布者：</span>{{ item.creator }}</div>
+        <!-- <div class="creator">
+            <span class="card-title">发布者：</span>{{ item.creator }}</div> -->
             <div class="operation flex justify-end">
                 <el-button type="primary" :icon="DArrowRight" size="small" @click="goTakeExam(item)">进入考试</el-button>
             </div>
