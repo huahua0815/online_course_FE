@@ -29,6 +29,7 @@ export const createComment = (data) => requests({ url: '/comment/addComment', da
 export const createReply = (data) => requests({ url: '/comment/addReply', data, method: 'post' })
 export const getCommentList = (params) => requests({ url: '/comment/getComment', method: 'get', params} )
 export const getCommentById =  (params) => requests({ url: '/comment/getCommentByUserId', method: 'get', params} )
+export const deleteComment = (params) => requests({ url: '/comment/delete', method: 'get', params} )
 
 //考试
 export const addExam = (data) => requests({ url: '/exam/add', data, method: 'post' })

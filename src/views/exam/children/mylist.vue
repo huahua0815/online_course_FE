@@ -35,7 +35,7 @@ const getList = async () => {
     const { data, code } = await getExamByTeacherId({ teacherId: store.info.userId })
     list.value = data
     }
-    console.log(data)
+    // console.log(data)
     
     
     console.log('list.value', list.value)

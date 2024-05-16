@@ -96,14 +96,32 @@ const handleAddCourse = () => {
   router.push('/course/create-course')
 }
 
-const chooseCourse = async (info,e) => {
-  e.stopPropagation()
-  // try{
-  const params = {
+const dialogVisible = ref(false)
+let updateSelectParams = {}
+const chooseCourse = async (info) => {
+  updateSelectParams = {
     scCourseId: info.courseId,
     scStudentId: store.info.userId
   }
-  const { code } = await addSC(params)
+  console.log('finf.freetype' , info.freeType)
+  if(info.freeType == 1){
+    dialogVisible.value = true
+  }else{
+    updateCourseSelect()
+  }
+  // try{
+   
+  // }catch(e){
+  //   ElMessage.error(e)
+  // }
+}
+const confirmPay = () => {
+  dialogVisible.value = false
+  updateCourseSelect()
+}
+const updateCourseSelect = async () => {
+
+  const { code } = await addSC(updateSelectParams)
   if (code == 0) {
     ElMessage.success('选课成功！')
     init()
@@ -111,9 +129,6 @@ const chooseCourse = async (info,e) => {
   } else {
     ElMessage.error('选课失败！')
   }
-  // }catch(e){
-  //   ElMessage.error(e)
-  // }
 }
 </script>
 
@@ -155,7 +170,7 @@ const chooseCourse = async (info,e) => {
                 d="M1018.71875 461.14625l-4.3225-16.12875c-4.62625 1.88625-13.8025 4.65875-27.53625 8.33875l-30.465 8.16375-6.0025-22.40125 22.40125-6.0025c6.125-0.995 11.58-2.1425 16.36875-3.425 9.1225-1.79875 12.70625-2.76 10.7525-2.88125l-4.56125-17.025c-5.81625 2.205-14.6975 4.9-26.64125 8.09875l-22.40125 6.0025c-2.24-8.36-3.02375-14.87125-2.35375-19.5375 0.26875-1.3475 0.2575-2.62-0.065-3.82375-0.1575-0.58875-4.21125-0.1475-12.12875 1.32875-3.74125 0.37125-7.795 0.8125-12.12875 1.32875 1.71 4.02875 4.63375 12.53375 8.755 25.50625l-16.1275 4.3225c-12.545 3.36125-20.6875 5.2275-24.43375 5.585l4.56125 17.025 9.8575-2.64125c4.17125-1.1175 8.88-2.69375 14.095-4.7375l16.12875-4.3225 6.0025 22.40125-29.56875 7.9225c-11.95625 3.20375-20.6875 5.22875-26.225 6.0675l4.32125 16.12875 9.8575-2.64125c4.77375-1.27875 10.0725-3.01375 15.8875-5.2175l29.57-7.9225 2.88125 10.7525c0.83875 5.53875 1.9025 10.685 3.18625 15.47375 1.79875 9.12125 2.75875 12.705 2.88125 10.7525l19.71375-5.28375c-1.5625-3.42-4.17875-12.00875-7.85875-25.74375l-2.88125-10.7525 31.36125-8.40375c6.125-0.99625 11.58125-2.1425 16.37-3.42625 9.1175-1.8 12.70125-2.76 10.74875-2.88125z"
                 p-id="14736" fill="#bd883b"></path>
             </svg>
-            <el-popconfirm title="确认选择这个课程?" @confirm.stop="chooseCourse(info, $event)">
+            <el-popconfirm title="确认选择这个课程?" @confirm.stop="chooseCourse(info)">
               <template #reference>
                 <el-button v-if="!info.isSelected" type="primary" size="small" >确认选课</el-button>
               </template>
@@ -174,7 +189,12 @@ const chooseCourse = async (info,e) => {
       </div>
     </div>
   </div>
-
+<el-dialog title="课程付费" v-model="dialogVisible">
+  <el-image style="width: 400px;" :src="getAssetsFile('img/money.jpg')"></el-image>
+  <div class="text-center mt-4">
+    <el-button type="primary" size="small" @click="confirmPay">确认已付费</el-button>
+  </div>
+</el-dialog>
 </template>
 
 <style scoped lang="scss">
