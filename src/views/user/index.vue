@@ -275,6 +275,7 @@ const getTeacherInfo = async () => {
 
   .card-content {
     height: 108px;
+    width: 250px;
     display: -webkit-box;
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;

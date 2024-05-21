@@ -82,7 +82,7 @@ const chooseCourse = async(info)=>{
 
 <template>
   <div class="course-list-wrap">
-   <div class="mb-4" style="font-size: 16px;">我的课程</div>
+   <div class="mb-4" style="font-size: 18px;color: #409eff">我的课程</div>
     <div class="course-list">
     <div
       class="course-card"

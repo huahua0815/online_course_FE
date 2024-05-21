@@ -190,10 +190,10 @@ const updateCourseSelect = async () => {
     </div>
   </div>
 <el-dialog title="课程付费" v-model="dialogVisible">
-  <el-image style="width: 400px;" :src="getAssetsFile('img/money.jpg')"></el-image>
+ <div class="pay-dialog-wrap"> <el-image style="width: 400px;" :src="getAssetsFile('img/money.jpg')"></el-image>
   <div class="text-center mt-4">
     <el-button type="primary" size="small" @click="confirmPay">确认已付费</el-button>
-  </div>
+  </div></div>
 </el-dialog>
 </template>
 
@@ -267,5 +267,11 @@ const updateCourseSelect = async () => {
       color: $text-plain-color;
     }
   }
+}
+.pay-dialog-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+ 
 }
 </style>

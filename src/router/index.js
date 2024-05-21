@@ -90,6 +90,11 @@ const router = createRouter({
           component: () => import('@/views/notice/index.vue')
         },
         {
+          path: '/notice/mylist',
+          name: 'MyNotice',
+          component: () => import('@/views/notice/my.vue')
+        },
+        {
           path: '/homework-detail',
           name: 'HomeworkDetail',
           component: () => import('@/views/homework/detail.vue')

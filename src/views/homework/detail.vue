@@ -151,7 +151,7 @@ const handleSubmit = async()=>{
 }
 const handleConfirm = ()=>{
   scoreDialogVisible.value = false
-  router.push('/course/list')
+  router.push('/course/detail')
 } 
   </script>
   

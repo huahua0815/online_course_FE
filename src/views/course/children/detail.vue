@@ -21,6 +21,10 @@
           课程考试时间：
           {{ info.courseExamDate }}
         </div>
+        <div class="info-detail-item">
+          <span>课程进度</span>
+          <el-progress :percentage="progress" striped/>
+        </div>
         <!-- <el-button v-if="store.isStudent" type="primary">开始学习</el-button> -->
         <el-button v-if="store.isTeacher ||store.isAdmin" @click="handlePostHomeWork" type="primary">发布作业</el-button>
       </div>
@@ -159,7 +163,7 @@ const info = reactive({
   cover:''
  });
 
-
+const progress = ref(0)
  const scList = ref([])
  const getScStudentId = async()=>{
   const {data,code } = await getSCByStudentId({studentId:store.info.userId})
@@ -168,12 +172,12 @@ const info = reactive({
 
  const homeworkList = ref([])
  const getHomeworkAll = async()=>{
+  await getScStudentId()
   const {data,code } = await getHomeworkList({courseId:info.courseId})
   homeworkList.value = data
   let scCur = scList.value.find(i=>i.scCourseId == info.courseId)
   if(scCur && scCur.scHomeScores){
     let homeScores = JSON.parse(scCur.scHomeScores)
-    console.log('honmeScores',homeScores)
     homeworkList.value.forEach((i,index)=>{
       i.homeworkScore = homeScores[i.homeworkId] || -1
     })
@@ -182,11 +186,12 @@ const info = reactive({
       i.homeworkScore = -1
     })
   }
+  let finished = homeworkList.value.filter(i=>i.homeworkScore != -1)
+  progress.value = ((finished.length / homeworkList.value.length)*100).toFixed(2)
  }
 
- onMounted(()=>{
+ onMounted(async()=>{
   getCommentInfo()
-  getScStudentId()
   getHomeworkAll()
  })
 

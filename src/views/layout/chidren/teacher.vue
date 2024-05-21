@@ -17,7 +17,7 @@
         <el-menu-item index="/course/manage" >我的课程</el-menu-item>
         <el-menu-item index="/discuss-my">我的回复</el-menu-item>
         <el-menu-item index="/exam/mylist">我发布的考试</el-menu-item>
-        <el-menu-item index="3-5">我发布的通知</el-menu-item>
+        <el-menu-item index="/notice/mylist">我发布的通知</el-menu-item>
         <el-menu-item index="/login">退出登录</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="/login">后台中心</el-menu-item>
